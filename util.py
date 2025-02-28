@@ -84,29 +84,35 @@ def sanitize_word(word):
 def gen_mdfile():
     
     df = pd.read_csv('valConst.csv',sep=";",index_col=0)
-    
-    f = open('template/pv_ag.md', 'r') 
-    md_content = f.read() 
-    pattern_row_data = re.compile("\{[^}]*\}}")
-    res = pattern_row_data.findall(md_content)
-    removed_secondentry = list(dict.fromkeys(res)) 
-    
-    
+        
     
     annee = current_year = datetime.now().year
     nbMembre = len(df.loc["PRESENT_MEMBERS"][0].split(','))
+    lstExtentless = []
+    
     
     lstACalc = {"YEAR" : str(annee), "NB_PRESENT" : str(nbMembre), "ANNEE_PRECEDENT" : str(annee-1)}
+    lstFile = os.listdir("template")
+    for file in lstFile:
+        lstExtentless.append(file[:-3])
     
-    for x in removed_secondentry:
-        tmp = sanitize_word(x)
-        if tmp in lstACalc :
-            md_content = md_content.replace(x,lstACalc[tmp])
-        else :
-            md_content = md_content.replace(x,df.loc[tmp][0])
-    print(md_content)
- 
+    for filename in lstExtentless:
+        f = open(f'template/{filename}.md', 'r') 
+        md_content = f.read() 
+        pattern_row_data = re.compile("\{[^}]*\}}")
+        res = pattern_row_data.findall(md_content)
+        removed_secondentry = list(dict.fromkeys(res)) 
+        for x in removed_secondentry:
+            cleaned_index = sanitize_word(x)
+            if cleaned_index in lstACalc :
+                md_content = md_content.replace(x,lstACalc[cleaned_index])
+            else :
+                md_content = md_content.replace(x,df.loc[cleaned_index][0])
+        t = open(f'./{filename}_{annee}.md', 'w') 
+        t.write(md_content)
+        t.close()
 
 #init_document()
 #export_to_calendar()
 gen_mdfile()
+
