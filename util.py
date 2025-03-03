@@ -10,6 +10,8 @@ import time
 from pypdf import PdfReader
 import re
 import pandas as pd
+from markdown_pdf import MarkdownPdf,Section
+
 
 CUR_YEAR_PATH = sys.path[0] + "/" + str(datetime.now().year)
 
@@ -96,6 +98,7 @@ def gen_mdfile():
     for file in lstFile:
         lstExtentless.append(file[:-3])
     
+    #We open a file, cut every instance that is a var and swap the string containing
     for filename in lstExtentless:
         f = open(f'template/{filename}.md', 'r') 
         md_content = f.read() 
@@ -111,6 +114,15 @@ def gen_mdfile():
         t = open(f'./{filename}_{annee}.md', 'w') 
         t.write(md_content)
         t.close()
+
+        
+        
+def md_to_pdf(text_md,filename):
+        pdf = MarkdownPdf(toc_level=2)
+        annee = current_year = datetime.now().year
+        pdf.add_section(Section(md_content))
+        pdf.save(f"{filename}_{annee}.pdf")
+    
 
 #init_document()
 #export_to_calendar()
