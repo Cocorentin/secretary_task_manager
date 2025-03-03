@@ -42,7 +42,7 @@ def get_pdf_data(cur_page,lst_val):
     
     
 #Renvoi un ics avec des dates formater à UTC+2
-def export_to_calendar():
+def export_to_calendar() -> []:
 
     # creating a pdf reader object
     reader = PdfReader('2025/Annonce des jours de tirs_2025_03022025.pdf')
@@ -51,23 +51,25 @@ def export_to_calendar():
     #print(len(reader.pages))
 
 
-    tmp = []
+    entry_data = []
+    fairpart_data = []
     
     #for each page, we extract the text and split into array before matching it
     for x in range(len(reader.pages)):
         page = reader.pages[x]
         raw_text = page.extract_text()
         split_txt = raw_text.splitlines()
-        get_pdf_data(split_txt,tmp)
+        get_pdf_data(split_txt,entry_data)
     
     
     #Create ISC
     delim = "-"
     c = Calendar()
-    for entry in tmp:
+    for entry in entry_data:
         e = Event()
         ymd = entry[0].split(".")
         ymd[0], ymd[2] = ymd[2], ymd[0]
+        fairpart_data.append([ymd[0] + "." + ymd[1] + "." + ymd[2],entry[1],entry[2],entry[4]])
         date_event = delim.join(ymd)
         e.name = "Évenement de type " + entry[4]
         e.begin = datetime.fromisoformat(date_event +"T" + entry[1] +":00+02:00")
@@ -77,6 +79,7 @@ def export_to_calendar():
     # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
     with open( CUR_YEAR_PATH +'/Date_Tir.ics', 'w') as my_file:
         my_file.writelines(c.serialize_iter())
+    return fairpart_data
         
 def sanitize_word(word):
     #Remove '{{' and '}}' from the given word.
@@ -114,7 +117,7 @@ def gen_mdfile():
         t = open(f'./{filename}_{annee}.md', 'w') 
         t.write(md_content)
         t.close()
-
+        #md_to_pdf(md_content,filename)
         
         
 def md_to_pdf(text_md,filename):
@@ -125,6 +128,6 @@ def md_to_pdf(text_md,filename):
     
 
 #init_document()
-#export_to_calendar()
-gen_mdfile()
+lst_date = export_to_calendar()
+#gen_mdfile()
 
