@@ -17,7 +17,7 @@ class calendar_event:
      
     def __init__(self):
         self.annee_actuelle = datetime.now().year
-        self.CUR_YEAR_PATH = sys.path[0] + "/" + str(self.annee_actuelle)
+        self.PATH_RES_FOLDER = sys.path[0] + "/" + str(self.annee_actuelle)
 
     def get_pdf_data(self,cur_page,lst_val):
         pattern_row_data = re.compile("^(\d{2}.\d{2}.\d{4}).*")
@@ -57,6 +57,6 @@ class calendar_event:
             c.events.add(e)
         c.events
         # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
-        with open( self.CUR_YEAR_PATH +'/Date_Tir.ics', 'w') as my_file:
+        with open( self.PATH_RES_FOLDER +'/Date_Tir.ics', 'w') as my_file:
             my_file.writelines(c.serialize_iter())
         return fairpart_data
