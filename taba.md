@@ -34,3 +34,16 @@ OUTPUT_PATH = os.path.join("./", OUTPUT_FILENAME)
 # Done
 - Créer un répertoire de l'année en cours
 
+class Menu
+Class Md/Pdf
+Class ISC
+
+
+1 Get Calender ISC
+2 Get All MD/PDF
+3 Get Convocation 
+4 Get Pv
+5 Get FairPart
+6 Get Member
+7 Get ALL
+8 Exit
