@@ -18,17 +18,8 @@ class md_generator:
         try:
             self.df = pd.read_csv('./data/valConst.csv',sep=";",index_col=0)
             self.nbMembre = len(self.df.loc["PRESENT_MEMBERS"][0].split(','))
-
         except:
             print("ERROR : Le fichier de données n'est pas au bon endroit ou son nom a été modifié. Cela ne devrait pas arriver si vous n'avez modifié que le contenue de valConst.csv avec excel ou à la main (mais dans ce cas la, je suis sur que Coco ne verra pas sa)")
-            sys.exit()
-        try:
-            self.lstExtentless = []
-            lstFile = os.listdir("./template")
-            for file in lstFile:
-                self.lstExtentless.append(file[:-3])
-        except:
-            print("ERROR: Le dossier template a été bougé ou n'existe pas, cela ne devrait pas arrivé si vous avez seuleument déplacé les templates dedans.")
             sys.exit()
         self.annee_actuelle = datetime.now().year
         self.lstACalc = {"YEAR" : str(self.annee_actuelle), "NB_PRESENT" : str(self.nbMembre), "ANNEE_PRECEDENT" : str(self.annee_actuelle-1)}
@@ -38,12 +29,24 @@ class md_generator:
     
     def get_template_name(self) -> []:
         """
-        Return a list containing all the template found in
-        the folder template. The extension has been removed
+        Renvoie une liste contenant tout les noms des fichiers sans
+        leurs extensions contenues dans le dossier templates.
         """
         return self.lstExtentless.copy()
 
+    def _get_lst_dynvar(pattern_needed : str,text_to_match: str):
+        """
+        Renvoie une list contenant tout les variables uniques nécessitant
+        d'être completé
+        """
+        pattern_row_data = re.compile(pattern_needed)
+        res = pattern_row_data.findall(text_to_match)
+        return list(dict.fromkeys(res)) 
     
+    def sanitize_word(word):
+    #Remove '{{' and '}}' from the given word.
+        return re.sub(r'{{(.*?)}}', r'\1', word)    
+        
     def gen_mdfile(self,filename : str):
         """ 
         Permet la création du markdown et du pdf du template avec les valeurs constante remplacé par celle attendu. 
@@ -52,21 +55,20 @@ class md_generator:
 
         f = open(f'template/{filename}.md', 'r') 
         md_content = f.read() 
-        pattern_row_data = re.compile("\{[^}]*\}}")
-        res = pattern_row_data.findall(md_content)
-        removed_secondentry = list(dict.fromkeys(res)) 
+        removed_secondentry = _get_lst_dynvar("\{[^}]*\}}",md_content)
+        
         for x in removed_secondentry:
             cleaned_index = sanitize_word(x)
             if cleaned_index in lstACalc :
                 md_content = md_content.replace(x,lstACalc[cleaned_index])
             else :
                 md_content = md_content.replace(x,df.loc[cleaned_index][0])
-        t = open(f'./{filename}_{annee_actuelle}.md', 'w') 
+        t = open(f'{PATH_RES_FOLDER}/{filename}_{annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
+        _md_to_pdf(md_content,filename)
             
-    def __md_to_pdf(self,text_md: str,filename: str):
+    def _md_to_pdf(self,text_md: str,filename: str):
         pdf = MarkdownPdf(toc_level=2)
-        annee = current_year = datetime.now().year
         pdf.add_section(Section(text_md))
-        pdf.save(f"{filename}_{annee}.pdf")
+        pdf.save(f"{PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.pdf")
