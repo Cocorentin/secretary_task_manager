@@ -11,22 +11,11 @@ from pypdf import PdfReader
 import re
 import pandas as pd
 from markdown_pdf import MarkdownPdf,Section
+from script.md_generator import md_generator
 
 
 CUR_YEAR_PATH = sys.path[0] + "/" + str(datetime.now().year)
 
-def get_ics_shooting():
-    
-    pdf = PDFQuery('example.pdf')
-    pdf.load()
-
-    # Use CSS-like selectors to locate the elements
-    text_elements = pdf.pq('LTTextLineHorizontal')
-
-    # Extract the text from the elements
-    text = [t.text for t in text_elements]
-
-    print(text)    
 
 def init_document():
     pathlib.Path(CUR_YEAR_PATH).mkdir(exist_ok=True)
@@ -45,11 +34,7 @@ def get_pdf_data(cur_page,lst_val):
 def export_to_calendar() -> []:
 
     # creating a pdf reader object
-    reader = PdfReader('2025/Annonce des jours de tirs_2025_03022025.pdf')
-
-    # printing number of pages in pdf file
-    #print(len(reader.pages))
-
+    reader = PdfReader('2025_Data/Annonce des jours de tirs_2025_03022025.pdf')
 
     entry_data = []
     fairpart_data = []
@@ -74,6 +59,7 @@ def export_to_calendar() -> []:
         e.name = "Évenement de type " + entry[4]
         e.begin = datetime.fromisoformat(date_event +"T" + entry[1] +":00+02:00")
         e.end = datetime.fromisoformat(date_event +"T" + entry[2] + ":00+02:00")
+        e.classification()
         c.events.add(e)
     c.events
     # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
@@ -84,50 +70,14 @@ def export_to_calendar() -> []:
 def sanitize_word(word):
     #Remove '{{' and '}}' from the given word.
     return re.sub(r'{{(.*?)}}', r'\1', word)
+        
 
-#Assurer vous d'avoir remplir au préalable le fichier information.csv en utilisant excel ou manuellement. Si vous avez du soucis, demande à un information à proximitée    
-def gen_mdfile():
-    
-    df = pd.read_csv('valConst.csv',sep=";",index_col=0)
-        
-    
-    annee = current_year = datetime.now().year
-    nbMembre = len(df.loc["PRESENT_MEMBERS"][0].split(','))
-    lstExtentless = []
-    
-    
-    lstACalc = {"YEAR" : str(annee), "NB_PRESENT" : str(nbMembre), "ANNEE_PRECEDENT" : str(annee-1)}
-    lstFile = os.listdir("template")
-    for file in lstFile:
-        lstExtentless.append(file[:-3])
-    
-    #We open a file, cut every instance that is a var and swap the string containing
-    for filename in lstExtentless:
-        f = open(f'template/{filename}.md', 'r') 
-        md_content = f.read() 
-        pattern_row_data = re.compile("\{[^}]*\}}")
-        res = pattern_row_data.findall(md_content)
-        removed_secondentry = list(dict.fromkeys(res)) 
-        for x in removed_secondentry:
-            cleaned_index = sanitize_word(x)
-            if cleaned_index in lstACalc :
-                md_content = md_content.replace(x,lstACalc[cleaned_index])
-            else :
-                md_content = md_content.replace(x,df.loc[cleaned_index][0])
-        t = open(f'./{filename}_{annee}.md', 'w') 
-        t.write(md_content)
-        t.close()
-        #md_to_pdf(md_content,filename)
-        
-        
-def md_to_pdf(text_md,filename):
-        pdf = MarkdownPdf(toc_level=2)
-        annee = current_year = datetime.now().year
-        pdf.add_section(Section(md_content))
-        pdf.save(f"{filename}_{annee}.pdf")
-    
+x = md_generator()
+
+lst_file = x.get_template_name()
+lst_size = len(lst_file)
 
 #init_document()
-lst_date = export_to_calendar()
+#lst_date = export_to_calendar()
 #gen_mdfile()
 
