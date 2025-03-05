@@ -1,7 +1,7 @@
-# Assemblée Générale {{YEAR}}
+# Assemblée Générale {{ANNEE}}
 
 ## Sommaire
-1. [Assemblée Générale {{YEAR}}](#assemblée-générale-year)
+1. [Assemblée Générale {{ANNEE}}](#assemblée-générale-year)
    1. [Sommaire](#sommaire)
    2. [Ouverture de l'assemblée, excusés](#ouverture-de-lassemblée-excusés)
    3. [Procès-verbal de l'assemblée générale de {{ANNEE_PRECEDENT}}](#procès-verbal-de-lassemblée-générale-de-annee_precedent)

@@ -13,7 +13,6 @@ import pandas as pd
 from markdown_pdf import MarkdownPdf,Section
 
 class md_generator:
-    PATH_RES_FOLDER = ""
     def __init__(self):
         try:
             self.df = pd.read_csv('./data/valConst.csv',sep=";",index_col=0)
@@ -22,9 +21,9 @@ class md_generator:
             print("ERROR : Le fichier de données n'est pas au bon endroit ou son nom a été modifié. Cela ne devrait pas arriver si vous n'avez modifié que le contenue de valConst.csv avec excel ou à la main (mais dans ce cas la, je suis sur que Coco ne verra pas sa)")
             sys.exit()
         self.annee_actuelle = datetime.now().year
-        self.lstACalc = {"YEAR" : str(self.annee_actuelle), "NB_PRESENT" : str(self.nbMembre), "ANNEE_PRECEDENT" : str(self.annee_actuelle-1)}
-        PATH_RES_FOLDER = sys.path[0] + "/" + str(self.annee_actuelle)
-        pathlib.Path(PATH_RES_FOLDER).mkdir(exist_ok=True)
+        self.lstACalc = {"ANNEE" : str(self.annee_actuelle), "NB_PRESENT" : str(self.nbMembre), "ANNEE_PRECEDENT" : str(self.annee_actuelle-1)}
+        self.PATH_RES_FOLDER = sys.path[0] + "/" + str(self.annee_actuelle)
+        pathlib.Path(self.PATH_RES_FOLDER).mkdir(exist_ok=True)
 
     
     def get_template_name(self) -> []:
@@ -34,16 +33,16 @@ class md_generator:
         """
         return self.lstExtentless.copy()
 
-    def _get_lst_dynvar(pattern_needed : str,text_to_match: str):
+    def _get_lst_dynvar(self,pattern_needed : str,text_to_match: str):
         """
         Renvoie une list contenant tout les variables uniques nécessitant
         d'être completé
         """
         pattern_row_data = re.compile(pattern_needed)
         res = pattern_row_data.findall(text_to_match)
-        return list(dict.fromkeys(res)) 
+        return list(dict.fromkeys(res))
     
-    def sanitize_word(word):
+    def sanitize_word(self,word):
     #Remove '{{' and '}}' from the given word.
         return re.sub(r'{{(.*?)}}', r'\1', word)    
         
@@ -55,20 +54,20 @@ class md_generator:
 
         f = open(f'template/{filename}.md', 'r') 
         md_content = f.read() 
-        removed_secondentry = _get_lst_dynvar("\{[^}]*\}}",md_content)
+        removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
         
-        for x in removed_secondentry:
-            cleaned_index = sanitize_word(x)
-            if cleaned_index in lstACalc :
-                md_content = md_content.replace(x,lstACalc[cleaned_index])
+        for entry_to_change in removed_secondentry:
+            cleaned_index = self.sanitize_word(entry_to_change)
+            if cleaned_index in self.lstACalc :
+                md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
             else :
-                md_content = md_content.replace(x,df.loc[cleaned_index][0])
-        t = open(f'{PATH_RES_FOLDER}/{filename}_{annee_actuelle}.md', 'w') 
+                md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index][0])
+        t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
-        _md_to_pdf(md_content,filename)
+        self._md_to_pdf(md_content,filename)
             
     def _md_to_pdf(self,text_md: str,filename: str):
         pdf = MarkdownPdf(toc_level=2)
         pdf.add_section(Section(text_md))
-        pdf.save(f"{PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.pdf")
+        pdf.save(f"{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.pdf")

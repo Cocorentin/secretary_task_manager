@@ -11,19 +11,7 @@ from pypdf import PdfReader
 import re
 import pandas as pd
 from markdown_pdf import MarkdownPdf,Section
-from script.user_interface import user_interface
-
-
-
-
-def init_document():
-    pathlib.Path(CUR_YEAR_PATH).mkdir(exist_ok=True)
-    
-    
-
-        
-
-        
+from script.user_interface import user_interface        
 
 x = user_interface()
 x.run()

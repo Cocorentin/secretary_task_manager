@@ -26,6 +26,19 @@ class user_interface:
         except:
             print("ERROR: Le dossier template a été bougé ou n'existe pas, cela ne devrait pas arrivé si vous avez seuleument déplacé les templates dedans.")
             sys.exit()
+            
+    def _dyn_available_action(self,lst_size : int):
+        command_panel = "Veuiller entrer le nombre correspondant à l'action attendu. Tout autre actions ne correspondant pas au choix offert arrêtera l'application \n"
+        if lst_size == 0:
+            command_panel += "0 Exporter les dates pour google calendar\n"
+        else:
+            cmpt = 0
+            for filename in self.lst_extentless:
+                command_panel += f"{cmpt} Créer {filename}\n"
+                cmpt += 1
+            command_panel += f"{cmpt} Créer les documents seulement\n{cmpt+1} Exporter les dates pour google calendar\n{cmpt+2} Tout exécuter\n"
+        print(command_panel)
+        
     
     def run(self):
         """
@@ -37,16 +50,8 @@ class user_interface:
         isc_tools = calendar_event()
         lst_size = len(self.lst_extentless)
         
-        command_panel = "Veuiller entrer le nombre correspondant à l'action attendu. Tout autre actions ne correspondant pas au choix offert arrêtera l'application \n"
-        if lst_size == 0:
-            command_panel += "0 Exporter les dates pour google calendar\n"
-        else:
-            cmpt = 0
-            for filename in self.lst_extentless:
-                command_panel += f"{cmpt} Créer {filename}\n"
-                cmpt += 1
-            command_panel += f"{cmpt} Créer tout les pdfs\n{cmpt+1} Exporter les dates pour google calendar\n{cmpt+2} Tout exécuter\n"
-        print(command_panel)
+        self._dyn_available_action(lst_size)
+        
         while True:
             answ = input("Entrer l'action souhaité : ")
             if answ.isdigit():
@@ -71,6 +76,7 @@ class user_interface:
                     else:
                         break
             else:
-                break    
+                break
+            print("Action effectuée")    
                 
         
