@@ -19,6 +19,7 @@ class user_interface:
         
     def __init__(self):
         try:
+            self.md_tools = md_generator()
             self.lst_extentless = []
             lstFile = os.listdir("./template")
             for file in lstFile:
@@ -27,41 +28,54 @@ class user_interface:
             print("ERROR: Le dossier template a été bougé ou n'existe pas, cela ne devrait pas arrivé si vous avez seuleument déplacé les templates dedans.")
             sys.exit()
             
-    def _dyn_available_action(self,lst_size : int):
-        command_panel = "Veuiller entrer le nombre correspondant à l'action attendu. Tout autre actions ne correspondant pas au choix offert arrêtera l'application \n"
-        if lst_size == 0:
-            command_panel += "0 Exporter les dates pour google calendar\n"
-        else:
-            self.cmpt = 0
-            for filename in self.lst_extentless:
-                command_panel += f"{self.cmpt} Créer {filename}\n"
-                self.cmpt += 1
-            command_panel += f"{self.cmpt} Créer les documents seulement\n{self.cmpt+1} Exporter les dates pour google calendar\n{self.cmpt+2} Tout exécuter\n"
-        print(command_panel)
+        
+    def _gen_all_md(self):    
+        for file in self.lst_extentless:
+            self.md_tools.gen_mdfile(file)
+        
         
     def _menu_md(self):
+        option_md = ""
         for idx in range(len(self.lst_extentless)):
-            print(f"OwO, do you want to print {self.lst_extentless[idx]}? Pwess {idx}")    
-        print("Pwess 2 for all\nPwess exit to go back to the main menu")
-        md_tools = md_generator()
+            option_md += f"OwO, do you want to print {self.lst_extentless[idx]}? Pwess {idx}\n"
+        option_md += "Pwess 2 for all\nPwess exit to go back to the main menu"
+        print(option_md)
         while True:
             answ = input("Entrer l'action souhaité : ")
             match answ.lower():
                 case "0":
-                    md_tools.gen_mdfile(self.lst_extentless[0])
+                    self.md_tools.gen_mdfile(self.lst_extentless[0])
                 case "1":
-                    md_tools.gen_mdfile(self.lst_extentless[1])
+                    self.md_tools.gen_mdfile(self.lst_extentless[1])
                 case "2":
-                    for file in self.lst_extentless:
-                        md_tools.gen_mdfile(file)
+                    self._gen_all_md()
                 case "exit":
                     break
                 case "" | _:
                     print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
+                    print(option_md)
             #else:
                 #break
-                 
-            
+    
+    def _menu_pdf(self):             
+        option_pdf = "Please select one of the number to export the following md"
+        for idx in range(len(self.lst_extentless)):
+            option_md += f"{self.lst_extentless[idx]}? Pwess {idx}\n"
+        print(option_md)
+        while True:
+            answ = input("Entrer l'action souhaité : ")
+            match answ.lower():
+                case "0":
+                    self.md_tools.gen_mdfile(self.lst_extentless[0])
+                case "1":
+                    self.md_tools.gen_mdfile(self.lst_extentless[1])
+                case "2":
+                    self._gen_all_md()
+                case "exit":
+                    break
+                case "" | _:
+                    print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
+                    print(option_md)            
             
     def run(self):
         """
@@ -71,9 +85,8 @@ class user_interface:
         """
         isc_tools = calendar_event()
         lst_size = len(self.lst_extentless)
-        
-        #self._dyn_available_action(lst_size)
-        print("0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 exit")
+        option_lst = "0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 exit"
+        print(option_lst)
         
         while True:
             answ = input("Entrer l'action souhaité : ")
@@ -85,10 +98,12 @@ class user_interface:
                     isc_tools.export_to_calendar()
                 case "2":
                     event_date = isc_tools.export_to_calendar()
+                    self._gen_all_md()
                 case "exit":
                     break
                 case "" | _:
                     print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
+                    print(option_lst)
             #else:
                 #break
                 
