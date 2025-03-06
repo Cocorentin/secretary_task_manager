@@ -32,11 +32,11 @@ class user_interface:
         if lst_size == 0:
             command_panel += "0 Exporter les dates pour google calendar\n"
         else:
-            cmpt = 0
+            self.cmpt = 0
             for filename in self.lst_extentless:
-                command_panel += f"{cmpt} Créer {filename}\n"
-                cmpt += 1
-            command_panel += f"{cmpt} Créer les documents seulement\n{cmpt+1} Exporter les dates pour google calendar\n{cmpt+2} Tout exécuter\n"
+                command_panel += f"{self.cmpt} Créer {filename}\n"
+                self.cmpt += 1
+            command_panel += f"{self.cmpt} Créer les documents seulement\n{self.cmpt+1} Exporter les dates pour google calendar\n{self.cmpt+2} Tout exécuter\n"
         print(command_panel)
         
     
@@ -62,9 +62,9 @@ class user_interface:
                             md_tools.gen_mdfile(file)
                     elif answ_int < lst_size:
                         md_tools.gen_mdfile(self.lst_extentless[answ_int])
-                    elif answ_int == cmpt+1:
+                    elif answ_int == self.cmpt+1:
                         res = isc_tools.export_to_calendar()
-                    elif answ_int == cmpt+2:
+                    elif answ_int == self.cmpt+2:
                         res = isc_tools.export_to_calendar()
                         for file in self.lst_extentless:
                             md_tools.gen_mdfile(file)
