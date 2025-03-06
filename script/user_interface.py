@@ -39,44 +39,57 @@ class user_interface:
             command_panel += f"{self.cmpt} Créer les documents seulement\n{self.cmpt+1} Exporter les dates pour google calendar\n{self.cmpt+2} Tout exécuter\n"
         print(command_panel)
         
-    
+    def _menu_md(self):
+        for idx in range(len(self.lst_extentless)):
+            print(f"OwO, do you want to print {self.lst_extentless[idx]}? Pwess {idx}")    
+        print("Pwess 2 for all\nPwess exit to go back to the main menu")
+        md_tools = md_generator()
+        while True:
+            answ = input("Entrer l'action souhaité : ")
+            match answ.lower():
+                case "0":
+                    md_tools.gen_mdfile(self.lst_extentless[0])
+                case "1":
+                    md_tools.gen_mdfile(self.lst_extentless[1])
+                case "2":
+                    for file in self.lst_extentless:
+                        md_tools.gen_mdfile(file)
+                case "exit":
+                    break
+                case "" | _:
+                    print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
+            #else:
+                #break
+                 
+            
+            
     def run(self):
         """
         lst_file is a list containing all the filename in the template folder
         This function let you start the interace, allowing the user to have the
         programm executed the task needed
         """
-        md_tools = md_generator()
         isc_tools = calendar_event()
         lst_size = len(self.lst_extentless)
         
-        self._dyn_available_action(lst_size)
+        #self._dyn_available_action(lst_size)
+        print("0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 exit")
         
         while True:
             answ = input("Entrer l'action souhaité : ")
-            if answ.isdigit():
-                answ_int = int(answ)
-                if lst_size != 0:
-                    if answ_int == lst_size:
-                        for file in self.lst_extentless:
-                            md_tools.gen_mdfile(file)
-                    elif answ_int < lst_size:
-                        md_tools.gen_mdfile(self.lst_extentless[answ_int])
-                    elif answ_int == self.cmpt+1:
-                        res = isc_tools.export_to_calendar()
-                    elif answ_int == self.cmpt+2:
-                        res = isc_tools.export_to_calendar()
-                        for file in self.lst_extentless:
-                            md_tools.gen_mdfile(file)
-                    else :
-                        break
-                else:
-                    if answ_int == 0:
-                        isc_tools.export_to_calendar()
-                    else:
-                        break
-            else:
-                break
-            print("Action effectuée")    
+            match answ.lower():
+                case "0":
+                    self._menu_md()
+                    print("0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 exit")
+                case "1":
+                    isc_tools.export_to_calendar()
+                case "2":
+                    event_date = isc_tools.export_to_calendar()
+                case "exit":
+                    break
+                case "" | _:
+                    print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
+            #else:
+                #break
                 
         
