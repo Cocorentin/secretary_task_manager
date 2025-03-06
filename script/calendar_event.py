@@ -59,4 +59,5 @@ class calendar_event:
         # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
         with open( self.PATH_RES_FOLDER +'/Date_Tir.ics', 'w') as my_file:
             my_file.writelines(c.serialize_iter())
+        print("Les événement ont été exportées avec succès")
         return fairpart_data

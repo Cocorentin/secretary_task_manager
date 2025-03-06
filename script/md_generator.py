@@ -16,7 +16,7 @@ class md_generator:
     def __init__(self):
         try:
             self.df = pd.read_csv('./data/valConst.csv',sep=";",index_col=0)
-            self.nbMembre = len(self.df.loc["PRESENT_MEMBERS"][0].split(','))
+            self.nbMembre = len(self.df.loc["PRESENT_MEMBERS"]["Information"].split(','))
         except:
             print("ERROR : Le fichier de données n'est pas au bon endroit ou son nom a été modifié. Cela ne devrait pas arriver si vous n'avez modifié que le contenue de valConst.csv avec excel ou à la main (mais dans ce cas la, je suis sur que Coco ne verra pas sa)")
             sys.exit()
@@ -25,13 +25,6 @@ class md_generator:
         self.PATH_RES_FOLDER = sys.path[0] + "/" + str(self.annee_actuelle)
         pathlib.Path(self.PATH_RES_FOLDER).mkdir(exist_ok=True)
 
-    
-    def get_template_name(self) -> []:
-        """
-        Renvoie une liste contenant tout les noms des fichiers sans
-        leurs extensions contenues dans le dossier templates.
-        """
-        return self.lstExtentless.copy()
 
     def _get_lst_dynvar(self,pattern_needed : str,text_to_match: str):
         """
@@ -51,7 +44,7 @@ class md_generator:
         Permet la création du markdown et du pdf du template avec les valeurs constante remplacé par celle attendu. 
         :param str filename: Le nom du fichier template (sans l'extension) à remplir et exporter en pdf
         """    
-
+        
         f = open(f'template/{filename}.md', 'r') 
         md_content = f.read() 
         removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
@@ -61,13 +54,17 @@ class md_generator:
             if cleaned_index in self.lstACalc :
                 md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
             else :
-                md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index][0])
+                md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index]["Information"])
         t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
-        self._md_to_pdf(md_content,filename)
+        self._md_to_pdf(f"{filename}_{self.annee_actuelle}")
+        print(f"Le fichier {filename}.md a été crée et importé en pdf avec succès")
             
-    def _md_to_pdf(self,text_md: str,filename: str):
+    def _md_to_pdf(self,filename: str):
+        fMd = open(f'{self.PATH_RES_FOLDER}/{filename}.md', 'r')
+        md_content = fMd.read()
+        fMd.close()
         pdf = MarkdownPdf(toc_level=2)
-        pdf.add_section(Section(text_md))
-        pdf.save(f"{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.pdf")
+        pdf.add_section(Section(md_content))
+        pdf.save(f"{self.PATH_RES_FOLDER}/{filename}.pdf")
