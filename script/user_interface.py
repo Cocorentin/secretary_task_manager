@@ -24,31 +24,41 @@ class user_interface:
             lstFile = os.listdir("./template")
             for file in lstFile:
                 self.lst_extentless.append(file[:-3])
+            self.lst_extentless = sorted(self.lst_extentless)
         except:
             print("ERROR: Le dossier template a été bougé ou n'existe pas, cela ne devrait pas arrivé si vous avez seuleument déplacé les templates dedans.")
             sys.exit()
             
         
+    def DELETEME_TESTFUN(self):
+        self.md_tools.gen_member_md() 
+        
     def _gen_all_md(self):    
         for file in self.lst_extentless:
             self.md_tools.gen_mdfile(file)
+        self.md_tools.gen_member_md()
+            
+    def _gen_all_pdf(self):    
+        for file in self.lst_extentless:
+            self.md_tools.md_to_pdf(file)
         
         
     def _menu_md(self):
-        option_md = ""
-        for idx in range(len(self.lst_extentless)):
-            option_md += f"OwO, do you want to print {self.lst_extentless[idx]}? Pwess {idx}\n"
-        option_md += "Pwess 2 for all\nPwess exit to go back to the main menu"
+        option_md = "0 Créer la convocation\n1 Crée le fair part\n2 Créer les membres\n3 Crée le pv\n4 Tout créer\nexit pour returner au menu précédent"
         print(option_md)
         while True:
             answ = input("Entrer l'action souhaité : ")
             match answ.lower():
                 case "0":
-                    self.md_tools.gen_mdfile(self.lst_extentless[0])
+                    self.md_tools.gen_mdfile("convocation_ag")
                 case "1":
-                    self.md_tools.gen_mdfile(self.lst_extentless[1])
+                    self.md_tools.gen_mdfile("fair_part")
                 case "2":
-                    self._gen_all_md()
+                    self.md_tools.gen_member_md()
+                case "3":
+                    self.md_tools.gen_mdfile("pv_ag")
+                case "4":
+                    self._gen_all_md()                                        
                 case "exit":
                     break
                 case "" | _:
@@ -58,7 +68,7 @@ class user_interface:
                 #break
     
     def _menu_pdf(self):             
-        option_pdf = "Please select one of the number to export the following md"
+        option_pdf = "0 Exporter la convocation\n1 Exporter le fair part\n2 Exporter les membres\n3 Exporter le pv\n4 Tout exporter\nexit pour returner au menu précédent"
         for idx in range(len(self.lst_extentless)):
             option_md += f"{self.lst_extentless[idx]}? Pwess {idx}\n"
         print(option_md)
@@ -66,11 +76,15 @@ class user_interface:
             answ = input("Entrer l'action souhaité : ")
             match answ.lower():
                 case "0":
-                    self.md_tools.gen_mdfile(self.lst_extentless[0])
+                    self.md_tools.md_to_pdf("convocation_ag")
                 case "1":
-                    self.md_tools.gen_mdfile(self.lst_extentless[1])
+                    self.md_tools.md_to_pdf("fair_part")
                 case "2":
-                    self._gen_all_md()
+                    self.md_tools.md_to_pdf("membres")
+                case "3":
+                    self.md_tools.md_to_pdf("pv_ag")
+                case "4":
+                    self._gen_all_pdf
                 case "exit":
                     break
                 case "" | _:

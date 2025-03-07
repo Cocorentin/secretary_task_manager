@@ -14,6 +14,7 @@ from markdown_pdf import MarkdownPdf,Section
 
 class md_generator:
     def __init__(self):
+        self.data_tableau = ["Role","Nom Prenom"]
         try:
             self.df = pd.read_csv('./data/valConst.csv',sep=";",index_col=0)
             self.nbMembre = len(self.df.loc["PRESENT_MEMBERS"]["Information"].split(','))
@@ -45,7 +46,11 @@ class md_generator:
         :param str filename: Le nom du fichier template (sans l'extension) à remplir et exporter en pdf
         """    
         
-        f = open(f'template/{filename}.md', 'r') 
+        try:
+            f = open(f'template/{filename}.md', 'r') 
+        except:
+            print(f"Erreur, vous n'avez pas mis le template {filename}.md dans le dossier template.")
+            exit()
         md_content = f.read() 
         removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
         
@@ -58,10 +63,63 @@ class md_generator:
         t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
-        self._md_to_pdf(f"{filename}_{self.annee_actuelle}")
+        self.md_to_pdf(f"{filename}_{self.annee_actuelle}")
         print(f"Le fichier {filename}.md a été crée et importé en pdf avec succès")
+        
+        
+        
+    def gen_member_md(self):
+        try:
+            f = open(f'template/membres.md', 'r') 
+        except:
+            print(f"Erreur, vous avez supprimé/déplacé le template membres.md du dossier template.")
+            exit()
+        try:
+            dm = pd.read_csv(f'./data/membres.csv',sep=";") 
+        except:
+            print(f"Erreur, vous avez supprimé/déplacé le fichier membres.csv du dossier data.")
+            exit()
+        
+        md_content = f.read()
+        removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
+        for entry_to_change in removed_secondentry:
+            cleaned_index = self.sanitize_word(entry_to_change)
+            if cleaned_index in self.lstACalc :
+                md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
+            #Cela indique que on a un tableau
+            elif 'TABLE' in cleaned_index :
+                #Remplacer par création du tableau html + par défaut Role | Nom Prénom
+                array_html = "<table>"
+                lst_entry = cleaned_index.split(sep='|')
+                for idx in range(len(dm)):
+                    array_html += self.get_row_table(idx,dm)
+                array_html += "</table>"
+                md_content = md_content.replace(entry_to_change,array_html)                
+            else :
+                md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index]["Information"])
+        t = open(f'{self.PATH_RES_FOLDER}/membres_{self.annee_actuelle}.md', 'w') 
+        t.write(md_content)
+        t.close()
             
-    def _md_to_pdf(self,filename: str):
+    def get_row_table(self,index:int,df_membre):
+        row = "<tr>"
+        for val in self.data_tableau:
+            if len(val.split(' ')) > 1:
+                row += "<td>"
+                for concat_val in val.split(' '):
+                    row += df_membre.loc[index][concat_val] + " "     
+                row += "</td>"
+            else :
+                row += "<td>" + df_membre.loc[index][val] + "</td>"
+        return row + "</tr>"
+                
+            
+    def md_to_pdf(self,filename: str):
+        """
+        Permet d'exporter un markdown en pdf, le markdown peut contenir des éléments htmls qui seront pris
+        en compte lors de la conversion.
+        :param str filename: Le nom du fichier md qui doit être exporter
+        """
         fMd = open(f'{self.PATH_RES_FOLDER}/{filename}.md', 'r')
         md_content = fMd.read()
         fMd.close()
