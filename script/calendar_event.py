@@ -11,7 +11,6 @@ from pypdf import PdfReader
 import re
 import pandas as pd
 from markdown_pdf import MarkdownPdf,Section
-from script.md_generator import md_generator
 
 class calendar_event:
      
@@ -26,20 +25,9 @@ class calendar_event:
                 lst_val.append(entry.split(" "))
             
     #Renvoi un ics avec des dates formater à UTC+2
-    def export_to_calendar(self) -> []:
+    def export_to_calendar(self):
 
-        # creating a pdf reader object
-        reader = PdfReader(f'data/Annonce des jours de tirs_2025_03022025.pdf')
-
-        entry_data = []
-        fairpart_data = []
-        
-        #for each page, we extract the text and split into array before matching it
-        for x in range(len(reader.pages)):
-            page = reader.pages[x]
-            raw_text = page.extract_text()
-            split_txt = raw_text.splitlines()
-            self.get_pdf_data(split_txt,entry_data)
+        entry_data = self.get_lst_date()
         
         
         #Create ISC
@@ -49,7 +37,6 @@ class calendar_event:
             e = Event()
             ymd = entry[0].split(".")
             ymd[0], ymd[2] = ymd[2], ymd[0]
-            fairpart_data.append([ymd[0] + "." + ymd[1] + "." + ymd[2],entry[1],entry[2],entry[4]])
             date_event = delim.join(ymd)
             e.name = "Évenement de type " + entry[4]
             e.begin = datetime.fromisoformat(date_event +"T" + entry[1] +":00+02:00")
@@ -60,4 +47,15 @@ class calendar_event:
         with open( self.PATH_RES_FOLDER +'/Date_Tir.ics', 'w') as my_file:
             my_file.writelines(c.serialize_iter())
         print("Les événement ont été exportées avec succès")
-        return fairpart_data
+
+    def get_lst_date(self) -> []:
+        reader = PdfReader(f'data/Annonce des jours de tirs_2025_03022025.pdf')
+        date_lst = []
+        
+        #for each page, we extract the text and split into array before matching it
+        for x in range(len(reader.pages)):
+            page = reader.pages[x]
+            raw_text = page.extract_text()
+            split_txt = raw_text.splitlines()
+            self.get_pdf_data(split_txt,date_lst)
+        return date_lst
