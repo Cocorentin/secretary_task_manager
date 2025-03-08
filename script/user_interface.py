@@ -72,7 +72,7 @@ class user_interface:
                 case "0":
                     self.md_tools.md_to_pdf("convocation_ag")
                 case "1":
-                    self.md_tools.md_to_pdf("fair_part")
+                    self.md_tools.FAIR_PART_FUNC("fair_part")
                 case "2":
                     self.md_tools.md_to_pdf("membres")
                 case "3":
@@ -116,3 +116,5 @@ class user_interface:
                 #break
                 
         
+    def TO_DELETE(self):
+        self.md_tools.FAIR_PART_FUNC("fair_part")

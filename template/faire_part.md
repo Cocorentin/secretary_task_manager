@@ -17,7 +17,7 @@ Avec nos cordiaux messages et au plaisir de vous rencontrer le **{{TBD}}**.
 ## Horaires des tirs
 
 <table>
-{{TABLE_CONTENT}}
+{{TABLE_EVENT}}
 
 <!-- <tr>
 <th>Jour</th><th>Heures</th>

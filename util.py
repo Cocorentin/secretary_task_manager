@@ -14,7 +14,8 @@ from markdown_pdf import MarkdownPdf,Section
 from script.user_interface import user_interface        
 
 x = user_interface()
-x.run()
+#x.run()
+x.TO_DELETE()
 
 
 #init_document()

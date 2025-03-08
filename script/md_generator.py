@@ -11,6 +11,8 @@ from pypdf import PdfReader
 import re
 import pandas as pd
 from markdown_pdf import MarkdownPdf,Section
+from script.calendar_event import calendar_event
+
 
 class md_generator:
     def __init__(self):
@@ -131,3 +133,27 @@ class md_generator:
         pdf = MarkdownPdf(toc_level=2)
         pdf.add_section(Section(md_content))
         pdf.save(f"{self.PATH_RES_FOLDER}/{filename}.pdf")
+        
+    def FAIR_PART_FUNC(self,filename:str):
+        isc_tools = calendar_event()
+        lst_event = isc_tools.get_lst_date()
+        
+        try:
+            f = open(f'template/{filename}.md', 'r') 
+        except:
+            print(f"Erreur, vous n'avez pas mis le template {filename}.md dans le dossier template.")
+            exit()
+        md_content = f.read() 
+        removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
+        
+        for entry_to_change in removed_secondentry:
+            cleaned_index = self.sanitize_word(entry_to_change)
+            if cleaned_index in self.lstACalc :
+                md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
+            else :
+                md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index]["Information"])
+        t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
+        t.write(md_content)
+        t.close()
+        self.md_to_pdf(f"{filename}")
+        print("tmp")
