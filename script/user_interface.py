@@ -29,10 +29,7 @@ class user_interface:
             print("ERROR: Le dossier template a été bougé ou n'existe pas, cela ne devrait pas arrivé si vous avez seuleument déplacé les templates dedans.")
             sys.exit()
             
-        
-    def DELETEME_TESTFUN(self):
-        self.md_tools.gen_member_md() 
-        
+                
     def _gen_all_md(self):    
         for file in self.lst_extentless:
             self.md_tools.gen_mdfile(file)
@@ -44,9 +41,9 @@ class user_interface:
         
         
     def _menu_md(self):
-        option_md = "0 Créer la convocation\n1 Crée le fair part\n2 Créer les membres\n3 Crée le pv\n4 Tout créer\nexit pour returner au menu précédent"
-        print(option_md)
+        option_md = "0 Créer la convocation\n1 Crée le fair part\n2 Créer les membres\n3 Crée le pv\n4 Tout créer\nExit pour returner au menu précédent"
         while True:
+            print(option_md)
             answ = input("Entrer l'action souhaité : ")
             match answ.lower():
                 case "0":
@@ -63,16 +60,13 @@ class user_interface:
                     break
                 case "" | _:
                     print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
-                    print(option_md)
             #else:
                 #break
     
     def _menu_pdf(self):             
-        option_pdf = "0 Exporter la convocation\n1 Exporter le fair part\n2 Exporter les membres\n3 Exporter le pv\n4 Tout exporter\nexit pour returner au menu précédent"
-        for idx in range(len(self.lst_extentless)):
-            option_md += f"{self.lst_extentless[idx]}? Pwess {idx}\n"
-        print(option_md)
+        option_pdf = "0 Exporter la convocation\n1 Exporter le fair part\n2 Exporter les membres\n3 Exporter le pv\n4 Tout exporter\nExit pour returner au menu précédent"
         while True:
+            print(option_pdf)
             answ = input("Entrer l'action souhaité : ")
             match answ.lower():
                 case "0":
@@ -89,7 +83,6 @@ class user_interface:
                     break
                 case "" | _:
                     print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
-                    print(option_md)            
             
     def run(self):
         """
@@ -99,10 +92,10 @@ class user_interface:
         """
         isc_tools = calendar_event()
         lst_size = len(self.lst_extentless)
-        option_lst = "0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 exit"
-        print(option_lst)
+        option_lst = "0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 Export PDF\nExit pour quitter le programme"
         
         while True:
+            print(option_lst)
             answ = input("Entrer l'action souhaité : ")
             match answ.lower():
                 case "0":
@@ -113,11 +106,12 @@ class user_interface:
                 case "2":
                     event_date = isc_tools.export_to_calendar()
                     self._gen_all_md()
+                case "3":
+                    self._menu_pdf()
                 case "exit":
                     break
                 case "" | _:
                     print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
-                    print(option_lst)
             #else:
                 #break
                 

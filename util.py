@@ -14,8 +14,7 @@ from markdown_pdf import MarkdownPdf,Section
 from script.user_interface import user_interface        
 
 x = user_interface()
-x.DELETEME_TESTFUN()
-#x.run()
+x.run()
 
 
 #init_document()
