@@ -63,7 +63,7 @@ class md_generator:
         t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
-        self.md_to_pdf(f"{filename}_{self.annee_actuelle}")
+        self.md_to_pdf(f"{filename}")
         print(f"Le fichier {filename}.md a été crée et importé en pdf avec succès")
         
         
@@ -89,7 +89,10 @@ class md_generator:
             #Cela indique que on a un tableau
             elif 'TABLE' in cleaned_index :
                 #Remplacer par création du tableau html + par défaut Role | Nom Prénom
-                array_html = "<table>"
+                array_html = "<table><tr>"
+                for header in self.data_tableau:
+                    array_html += f"<th>{header}</th>"
+                array_html += "</tr>"
                 lst_entry = cleaned_index.split(sep='|')
                 for idx in range(len(dm)):
                     array_html += self.get_row_table(idx,dm)
@@ -100,6 +103,8 @@ class md_generator:
         t = open(f'{self.PATH_RES_FOLDER}/membres_{self.annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
+        self.md_to_pdf(f"membres")
+        print("Le fichier membre a été crée et importé avec succès")
             
     def get_row_table(self,index:int,df_membre):
         row = "<tr>"
@@ -120,7 +125,7 @@ class md_generator:
         en compte lors de la conversion.
         :param str filename: Le nom du fichier md qui doit être exporter
         """
-        fMd = open(f'{self.PATH_RES_FOLDER}/{filename}.md', 'r')
+        fMd = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'r')
         md_content = fMd.read()
         fMd.close()
         pdf = MarkdownPdf(toc_level=2)
