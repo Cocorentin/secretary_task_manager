@@ -44,6 +44,7 @@ Avec nos cordiaux messages et au plaisir de vous rencontrer le **{{TBD}}**.
 - **Portes ouvertes** : {{OPEN_DOORS}}.
 - **Tir en campagne** : {{CAMPAIGN}}.
 - **Tir de clôture** : {{ENDING_SHOOT}}.
+TRAINING OPEN_DOORS CAMPAIGN ENDING_SHOOT
 
 ---
 
