@@ -117,4 +117,4 @@ class user_interface:
                 
         
     def TO_DELETE(self):
-        self.md_tools.FAIR_PART_FUNC("fair_part")
+        self.md_tools.FAIR_PART_FUNC("faire_part")

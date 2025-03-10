@@ -4,6 +4,7 @@ from datetime import datetime
 import pathlib
 #from pdfquery import PDFQuery
 from ics import Calendar, Event, Todo
+import calendar
 from datetime import datetime
 import time
 #Extract Data into array here
@@ -12,10 +13,13 @@ import re
 import pandas as pd
 from markdown_pdf import MarkdownPdf,Section
 from script.calendar_event import calendar_event
+import locale
 
 
 class md_generator:
     def __init__(self):
+        locale.setlocale(category=locale.LC_ALL,locale="fr_FR.utf8")
+        val_indisponible = "LA VALEUR EST MANQUANT DANS LES DATES DE TIRS"
         self.data_tableau = ["Role","Nom Prenom"]
         try:
             self.df = pd.read_csv('./data/valConst.csv',sep=";",index_col=0)
@@ -24,7 +28,7 @@ class md_generator:
             print("ERROR : Le fichier de données n'est pas au bon endroit ou son nom a été modifié. Cela ne devrait pas arriver si vous n'avez modifié que le contenue de valConst.csv avec excel ou à la main (mais dans ce cas la, je suis sur que Coco ne verra pas sa)")
             sys.exit()
         self.annee_actuelle = datetime.now().year
-        self.lstACalc = {"ANNEE" : str(self.annee_actuelle), "NB_PRESENT" : str(self.nbMembre), "ANNEE_PRECEDENT" : str(self.annee_actuelle-1)}
+        self.lstACalc = {"ANNEE" : str(self.annee_actuelle), "NB_PRESENT" : str(self.nbMembre), "ANNEE_PRECEDENT" : str(self.annee_actuelle-1),"TRAINING" : val_indisponible, "OPEN_DOORS" : val_indisponible, "CAMPAIGN":val_indisponible, "ENDING_SHOOT":val_indisponible}
         self.PATH_RES_FOLDER = sys.path[0] + "/" + str(self.annee_actuelle)
         pathlib.Path(self.PATH_RES_FOLDER).mkdir(exist_ok=True)
 
@@ -137,12 +141,33 @@ class md_generator:
     def FAIR_PART_FUNC(self,filename:str):
         isc_tools = calendar_event()
         lst_event = isc_tools.get_lst_date()
-        
+                    
         try:
             f = open(f'template/{filename}.md', 'r') 
         except:
             print(f"Erreur, vous n'avez pas mis le template {filename}.md dans le dossier template.")
             exit()
+            
+        lst_OP = dict()
+        
+        for x in lst_event :
+            match x[4]:
+                case "Autres" :
+                    if x[5] == "Tir":
+                        self.lstACalc["ENDING_SHOOT"] = x[0]
+                    else:
+                        self.lstACalc["OPEN_DOORS"] = x[0]
+                case "TR":
+                    self.lstACalc["TRAINING"] = x[0]
+                case "FS":
+                    self.lstACalc["CAMPAIGN"] = x[0]
+                case _:
+                    jour_semaine = datetime.strptime(x[0], "%d.%m.%Y").strftime("%A")
+                    elem_date = x[0].split('.')
+                    mois = calendar.month_name[int(elem_date[1])]
+                    lst_OP["Tmp"].append(f"{elem_date[0]}")
+
+        
         md_content = f.read() 
         removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
         
