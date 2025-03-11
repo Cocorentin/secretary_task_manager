@@ -173,6 +173,8 @@ class md_generator:
             cleaned_index = self.sanitize_word(entry_to_change)
             if cleaned_index in self.lstACalc :
                 md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
+            elif cleaned_index == "TABLE_EVENT":
+                md_content = md_content.replace(entry_to_change,FP_Table())
             else :
                 md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index]["Information"])
         t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
@@ -180,3 +182,7 @@ class md_generator:
         t.close()
         self.md_to_pdf(f"{filename}")
         print("tmp")
+        
+def FP_Table(self):
+    res = "<table>"
+    return res + "</table>"
