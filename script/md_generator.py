@@ -165,9 +165,7 @@ class md_generator:
                     jour_semaine = datetime.strptime(x[0], "%d.%m.%Y").strftime("%A")
                     elem_date = x[0].split('.')
                     mois = calendar.month_name[int(elem_date[1])]
-                    lst_OP["Tmp"].append(f"{elem_date[0]}")
-
-        
+                    lst_OP.setdefault(f"{jour_semaine} {x[1]}-{x[2]}",[]).append(f"{elem_date[0]} {mois}")
         md_content = f.read() 
         removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
         
