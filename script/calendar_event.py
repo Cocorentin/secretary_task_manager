@@ -1,15 +1,11 @@
 import os
 import sys
 from datetime import datetime
-import pathlib
 #from pdfquery import PDFQuery
 from ics import Calendar, Event, Todo
-import time
 #Extract Data into array here
 from pypdf import PdfReader
 import re
-import pandas as pd
-from markdown_pdf import MarkdownPdf,Section
 
 class calendar_event:
      
