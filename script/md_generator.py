@@ -183,7 +183,13 @@ class md_generator:
         self.md_to_pdf(f"{filename}")
         print("Le fichier de faire part a été crée et importé avec succès")
         
-    def fp_table(self,lst_eventjour):
+    def fp_table(self,lst_eventjour : dict):
+        """
+        Retourne un tableau en html contenant un en-tête avec le jour de la semaine + l'horaire
+        de tir. Les lignes contiennent le jour/mois pour chaque séance.
+        :param dict lst_eventjour: Contient nu dictionnaire avec comme index le jour de la semaine + horaire avec
+        une liste contenant le jour/mois de la séance
+        """
         
         res = "<table><tr>"
         for x in lst_eventjour:
