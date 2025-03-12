@@ -4,7 +4,6 @@ from datetime import datetime
 import pathlib
 #from pdfquery import PDFQuery
 from ics import Calendar, Event, Todo
-from datetime import datetime
 import time
 #Extract Data into array here
 from pypdf import PdfReader
@@ -18,18 +17,29 @@ class calendar_event:
         self.annee_actuelle = datetime.now().year
         self.PATH_RES_FOLDER = sys.path[0] + "/" + str(self.annee_actuelle)
 
-    def get_pdf_data(self,cur_page,lst_val):
+    def get_pdf_data(self,cur_page :list(),lst_date : list()):
+        """
+        Modifie la liste entrée en paramètre pour qu'elle inclus tout les champs correspondant
+        à une séance de tir.
+        :param cur_page list: Correspond à une liste contenant chaque ligne de texte d'une page du pdf
+        :param lst_date list: Correspond à une liste stockant les champs contenant les séances de tir
+        """
         pattern_row_data = re.compile("^(\d{2}.\d{2}.\d{4}).*")
         for entry in cur_page:
             if pattern_row_data.match(entry):
-                lst_val.append(entry.split(" "))
+                lst_date.append(entry.split(" "))
             
     #Renvoi un ics avec des dates formater à UTC+2
     def export_to_calendar(self):
+        """
+        Créer un .ics, contenant les dates des séances de tirs. Ces dates
+        peuvent être exportée dans google calendar. 12.03.2025 Il n'est actuellement
+        pas possible d'importer des rappels ou d'utiliser des couleurs pour différencier
+        les événements
+        """
 
         entry_data = self.get_lst_date()
-        
-        
+                
         #Create ISC
         delim = "-"
         c = Calendar()
@@ -49,7 +59,15 @@ class calendar_event:
         print("Les événement ont été exportées avec succès")
 
     def get_lst_date(self) -> []:
-        reader = PdfReader(f'data/Annonce des jours de tirs_2025_03022025.pdf')
+        """
+        Retourne une liste contenant chaque date obtenus dans le pdf. Utilisé dans 
+        la fonction export_to_calendar
+        """
+        try:
+            reader = PdfReader(f'data/Annonce des jours de tirs_2025_03022025.pdf')
+        except:
+            print("ERREUR, le fichier n'est pas trouvable dans le dossier data, veuillez insèrer un pdf nommée joursdetirs")
+            sys.exit()
         date_lst = []
         
         #for each page, we extract the text and split into array before matching it
