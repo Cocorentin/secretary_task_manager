@@ -79,7 +79,7 @@ class user_interface:
                 case "3":
                     self.md_tools.md_to_pdf("pv_ag")
                 case "4":
-                    self._gen_all_pdf
+                    self._gen_all_pdf()
                 case "exit":
                     break
                 case "" | _:
