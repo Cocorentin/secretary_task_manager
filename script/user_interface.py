@@ -31,9 +31,10 @@ class user_interface:
             
                 
     def _gen_all_md(self):    
-        for file in self.lst_extentless:
-            self.md_tools.gen_mdfile(file)
+        self.md_tools.gen_mdfile("convocation_ag")
+        self.md_tools.gen_fp_md("faire_part")
         self.md_tools.gen_member_md()
+        self.md_tools.gen_mdfile("pv_ag")
             
     def _gen_all_pdf(self):    
         for file in self.lst_extentless:
@@ -49,7 +50,7 @@ class user_interface:
                 case "0":
                     self.md_tools.gen_mdfile("convocation_ag")
                 case "1":
-                    self.md_tools.gen_mdfile("fair_part")
+                    self.md_tools.gen_fp_md("faire_part")
                 case "2":
                     self.md_tools.gen_member_md()
                 case "3":
@@ -59,7 +60,7 @@ class user_interface:
                 case "exit":
                     break
                 case "" | _:
-                    print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
+                    print("Veuillez entrer une commande valide\n")
             #else:
                 #break
     
@@ -72,7 +73,7 @@ class user_interface:
                 case "0":
                     self.md_tools.md_to_pdf("convocation_ag")
                 case "1":
-                    self.md_tools.FAIR_PART_FUNC("fair_part")
+                    self.md_tools.md_to_pdf("faire_part")
                 case "2":
                     self.md_tools.md_to_pdf("membres")
                 case "3":
@@ -82,7 +83,7 @@ class user_interface:
                 case "exit":
                     break
                 case "" | _:
-                    print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
+                    print("Veuillez entrer une commande valide\n")
             
     def run(self):
         """
@@ -115,6 +116,3 @@ class user_interface:
             #else:
                 #break
                 
-        
-    def TO_DELETE(self):
-        self.md_tools.FAIR_PART_FUNC("faire_part")

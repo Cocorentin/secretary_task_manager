@@ -16,7 +16,6 @@ Avec nos cordiaux messages et au plaisir de vous rencontrer le **{{TBD}}**.
 
 ## Horaires des tirs
 
-<table>
 {{TABLE_EVENT}}
 
 <!-- <tr>
@@ -36,7 +35,6 @@ Avec nos cordiaux messages et au plaisir de vous rencontrer le **{{TBD}}**.
 </tr> -->
 
 
-</table>
 
 ## Dates importantes
 
@@ -44,7 +42,6 @@ Avec nos cordiaux messages et au plaisir de vous rencontrer le **{{TBD}}**.
 - **Portes ouvertes** : {{OPEN_DOORS}}.
 - **Tir en campagne** : {{CAMPAIGN}}.
 - **Tir de clôture** : {{ENDING_SHOOT}}.
-TRAINING OPEN_DOORS CAMPAIGN ENDING_SHOOT
 
 ---
 

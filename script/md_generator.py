@@ -138,7 +138,7 @@ class md_generator:
         pdf.add_section(Section(md_content))
         pdf.save(f"{self.PATH_RES_FOLDER}/{filename}.pdf")
         
-    def FAIR_PART_FUNC(self,filename:str):
+    def gen_fp_md(self,filename:str):
         isc_tools = calendar_event()
         lst_event = isc_tools.get_lst_date()
                     
@@ -174,15 +174,39 @@ class md_generator:
             if cleaned_index in self.lstACalc :
                 md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
             elif cleaned_index == "TABLE_EVENT":
-                md_content = md_content.replace(entry_to_change,FP_Table())
+                md_content = md_content.replace(entry_to_change,self.fp_table(lst_OP))
             else :
                 md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index]["Information"])
         t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
         self.md_to_pdf(f"{filename}")
-        print("tmp")
+        print("Le fichier de faire part a été crée et importé avec succès")
         
-def FP_Table(self):
-    res = "<table>"
-    return res + "</table>"
+    def fp_table(self,lst_eventjour):
+        
+        res = "<table><tr>"
+        for x in lst_eventjour:
+            splt_time_day = x.split(' ')
+            res += f"<th><p>{splt_time_day[0]}</p>{splt_time_day[1]}</th>"
+        res += "</tr>"
+        end_val = self.get_dict_longest(lst_eventjour)
+        for x in range(end_val):
+            res += "<tr>"
+            for row in lst_eventjour:
+                try:
+                    res += f"<td>{lst_eventjour[row][x]}</td>"
+                except:
+                    res += "<td></td>"
+            res += "</tr>"
+        return res + "</table>"
+    
+    def get_dict_longest(self,lst_evalute : dict) -> int:
+        highest = 0
+        cmpt = 0
+        for cols in lst_evalute:
+            cmpt = 0    
+            for rows in cols:
+                cmpt += 1
+            highest = cmpt if highest < cmpt else highest
+        return highest
