@@ -18,31 +18,37 @@ class user_interface:
             
                 
     def _gen_all_md(self):    
-        self.md_tools.gen_mdfile("convocation_ag")
+        self.md_tools.gen_md("convocation_ag")
         self.md_tools.gen_fp_md("faire_part")
-        self.md_tools.gen_member_md()
-        self.md_tools.gen_mdfile("pv_ag")
+        self.md_tools.gen_member_md("membres")
+        self.md_tools.gen_md("pv_ag")
             
     def _gen_all_pdf(self):    
+        """
+        Exporter tout les mds présent dans le dossier de l'année actuel en pdf. Cette fonction ne plante pas s'il n'y a pas tout les mds présents.
+        """
         for file in  os.listdir(f"./{datetime.now().year}"):
             if file.endswith(".md"):
                 self.md_tools.md_to_pdf(file[:-3])
         
         
     def _menu_md(self):
-        option_md = "0 Créer la convocation\n1 Crée le fair part\n2 Créer les membres\n3 Crée le pv\n4 Tout créer\nExit pour returner au menu précédent"
+        """
+        Affiche le menu pour convertir les templates en markdowns remplis
+        """
+        option_md = "0 Créer la convocation\n1 Crée le fair part\n2 Créer les membres\n3 Crée le pv\n4 Tout créer\nExit pour returner au menu précédent\n"
         while True:
             print(option_md)
             answ = input("Entrer l'action souhaité : ")
             match answ.lower():
                 case "0":
-                    self.md_tools.gen_mdfile("convocation_ag")
+                    self.md_tools.gen_md("convocation_ag")
                 case "1":
                     self.md_tools.gen_fp_md("faire_part")
                 case "2":
-                    self.md_tools.gen_member_md()
+                    self.md_tools.gen_member_md("membres")
                 case "3":
-                    self.md_tools.gen_mdfile("pv_ag")
+                    self.md_tools.gen_md("pv_ag")
                 case "4":
                     self._gen_all_md()                                        
                 case "exit":
@@ -51,8 +57,12 @@ class user_interface:
                     print("Veuillez entrer une commande valide\n")
 
     
-    def _menu_pdf(self):             
-        option_pdf = "0 Exporter la convocation\n1 Exporter le fair part\n2 Exporter les membres\n3 Exporter le pv\n4 Tout exporter\nExit pour returner au menu précédent"
+    def _menu_pdf(self):
+        """
+        Retourne un menu permettant l'exportation de un/tout le(s) fichiers md stocké dans le dossier de l'année actuel. Cet fonction
+        ne vérifie pas si le fichier voulu existe.
+        """             
+        option_pdf = "0 Exporter la convocation\n1 Exporter le fair part\n2 Exporter les membres\n3 Exporter le pv\n4 Tout exporter\nExit pour returner au menu précédent\n"
         while True:
             print(option_pdf)
             answ = input("Entrer l'action souhaité : ")
@@ -86,7 +96,6 @@ class user_interface:
             match answ.lower():
                 case "0":
                     self._menu_md()
-                    print("0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 exit")
                 case "1":
                     self.isc_tools.export_to_calendar()
                 case "2":
