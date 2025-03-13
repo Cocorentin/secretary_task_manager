@@ -1,16 +1,6 @@
 import os
 import sys
 from datetime import datetime
-import pathlib
-#from pdfquery import PDFQuery
-from ics import Calendar, Event, Todo
-from datetime import datetime
-import time
-#Extract Data into array here
-from pypdf import PdfReader
-import re
-import pandas as pd
-from markdown_pdf import MarkdownPdf,Section
 from script.md_generator import md_generator
 from script.calendar_event import calendar_event
 
@@ -20,13 +10,10 @@ class user_interface:
     def __init__(self):
         try:
             self.md_tools = md_generator()
-            self.lst_extentless = []
-            lstFile = os.listdir("./template")
-            for file in lstFile:
-                self.lst_extentless.append(file[:-3])
-            self.lst_extentless = sorted(self.lst_extentless)
+            self.isc_tools = calendar_event()
+            self.annee_actuelle = datetime.now().year
         except:
-            print("ERROR: Le dossier template a été bougé ou n'existe pas, cela ne devrait pas arrivé si vous avez seuleument déplacé les templates dedans.")
+            print("ERROR: Un/Des scripts ont été bougée du dossier script, ou le dossier a été déplacé ailleur que dans le dossier courant. Assurez vous que md_generator.py et calendar_event sont dans le même répertoire que user_interface")
             sys.exit()
             
                 
@@ -37,8 +24,9 @@ class user_interface:
         self.md_tools.gen_mdfile("pv_ag")
             
     def _gen_all_pdf(self):    
-        for file in self.lst_extentless:
-            self.md_tools.md_to_pdf(file)
+        for file in  os.listdir(f"./{datetime.now().year}"):
+            if file.endswith(".md"):
+                self.md_tools.md_to_pdf(file[:-3])
         
         
     def _menu_md(self):
@@ -61,8 +49,7 @@ class user_interface:
                     break
                 case "" | _:
                     print("Veuillez entrer une commande valide\n")
-            #else:
-                #break
+
     
     def _menu_pdf(self):             
         option_pdf = "0 Exporter la convocation\n1 Exporter le fair part\n2 Exporter les membres\n3 Exporter le pv\n4 Tout exporter\nExit pour returner au menu précédent"
@@ -71,13 +58,13 @@ class user_interface:
             answ = input("Entrer l'action souhaité : ")
             match answ.lower():
                 case "0":
-                    self.md_tools.md_to_pdf("convocation_ag")
+                    self.md_tools.md_to_pdf(f"convocation_ag_{self.annee_actuelle}")
                 case "1":
-                    self.md_tools.md_to_pdf("faire_part")
+                    self.md_tools.md_to_pdf(f"faire_part_{self.annee_actuelle}")
                 case "2":
-                    self.md_tools.md_to_pdf("membres")
+                    self.md_tools.md_to_pdf(f"membres_{self.annee_actuelle}")
                 case "3":
-                    self.md_tools.md_to_pdf("pv_ag")
+                    self.md_tools.md_to_pdf(f"pv_ag_{self.annee_actuelle}")
                 case "4":
                     self._gen_all_pdf()
                 case "exit":
@@ -91,8 +78,6 @@ class user_interface:
         This function let you start the interace, allowing the user to have the
         programm executed the task needed
         """
-        isc_tools = calendar_event()
-        lst_size = len(self.lst_extentless)
         option_lst = "0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 Export PDF\nExit pour quitter le programme"
         
         while True:
@@ -103,9 +88,9 @@ class user_interface:
                     self._menu_md()
                     print("0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 exit")
                 case "1":
-                    isc_tools.export_to_calendar()
+                    self.isc_tools.export_to_calendar()
                 case "2":
-                    event_date = isc_tools.export_to_calendar()
+                    event_date = self.isc_tools.export_to_calendar()
                     self._gen_all_md()
                 case "3":
                     self._menu_pdf()
@@ -113,6 +98,5 @@ class user_interface:
                     break
                 case "" | _:
                     print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
-            #else:
-                #break
+
                 

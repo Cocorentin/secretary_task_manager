@@ -69,7 +69,7 @@ class md_generator:
         t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
-        self.md_to_pdf(f"{filename}")
+        self.md_to_pdf(f"{filename}_{self.annee_actuelle}")
         print(f"Le fichier {filename}.md a été crée et importé en pdf avec succès")
         
         
@@ -109,7 +109,7 @@ class md_generator:
         t = open(f'{self.PATH_RES_FOLDER}/membres_{self.annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
-        self.md_to_pdf(f"membres")
+        self.md_to_pdf(f"membres_{self.annee_actuelle}")
         print("Le fichier membre a été crée et importé avec succès")
             
     def get_row_table(self,index:int,df_membre):
@@ -125,19 +125,6 @@ class md_generator:
         return row + "</tr>"
                 
             
-    def md_to_pdf(self,filename: str):
-        """
-        Permet d'exporter un markdown en pdf, le markdown peut contenir des éléments htmls qui seront pris
-        en compte lors de la conversion.
-        :param str filename: Le nom du fichier md qui doit être exporter
-        """
-        fMd = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'r')
-        md_content = fMd.read()
-        fMd.close()
-        pdf = MarkdownPdf(toc_level=2)
-        pdf.add_section(Section(md_content))
-        pdf.save(f"{self.PATH_RES_FOLDER}/{filename}.pdf")
-        
     def gen_fp_md(self,filename:str):
         isc_tools = calendar_event()
         lst_event = isc_tools.get_lst_date()
@@ -180,7 +167,7 @@ class md_generator:
         t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
         t.write(md_content)
         t.close()
-        self.md_to_pdf(f"{filename}")
+        self.md_to_pdf(f"{filename}_{self.annee_actuelle}")
         print("Le fichier de faire part a été crée et importé avec succès")
         
     def fp_table(self,lst_eventjour : dict):
@@ -216,3 +203,21 @@ class md_generator:
                 cmpt += 1
             highest = cmpt if highest < cmpt else highest
         return highest
+    
+    def md_to_pdf(self,filename: str):
+        """
+        Permet d'exporter un markdown en pdf, le markdown peut contenir des éléments htmls qui seront pris
+        en compte lors de la conversion.
+        :param str filename: Le nom du fichier md qui doit être exporter
+        """
+        try:
+            fMd = open(f'{self.PATH_RES_FOLDER}/{filename}.md', 'r')
+        except:
+            print(f"ERROR, le fichier {filename} de l'année actuelle n'existe pas en md, assurez vous de crée le md auparavant")
+            sys.exit()
+        md_content = fMd.read()
+        fMd.close()
+        pdf = MarkdownPdf(toc_level=2)
+        pdf.add_section(Section(md_content))
+        pdf.save(f"{self.PATH_RES_FOLDER}/{filename}.pdf")
+            
