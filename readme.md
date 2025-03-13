@@ -13,14 +13,17 @@ ne sont pas affichée dans ce fichier car ils sont calculé automatiquement
 - - ANNEE : L'année actuels
 - - NB_PRESENT : Le nombre de membre présent durant l'assemblée générale
 - - ANNEE_PRECEDENT : L'année précédent
+- - TRAINING / OPEN_DOORS / CAMPAIGN / ENDING_SHOOT Correspond au date de certains événements. Elles se remplissent automatiquement lors de la création du faire-part
 
 - Un pdf contenant les dates des jours de tirs. Un pdf d'exemple existe dans le dossier data (qui doit contenir votre nouveau planning)
 
+# Programming
+Cette partie doit être complèter pour contenir des éléments devant être modifié depuis le code
+- md_generator
+- - data_tableau est un tableau utilisé pour la fonction membres uniquement. Elle permet de définir les champs que votre tableau doit contenir
+
 # Utilisaton
-Lorsque le programme démarre, vous aurez le choix en fonction des valeurs insèré. Si vous n'avez pas fournit de template, vous ne pourrez
-seuleument que export les dates des jours de tirs. Ces dates pourront ensuite être ajoutée à votre google calendar. Si des templates ont été fournis,
-vous aurez une option pour créer chacunes séparément, ou toutes en même temps. Vous aurez par ailleurs l'option de créer tout les documents en plus d'exporter
-les dates. A SUPPRIMER Actuellement il faut rajouter un check s'il n'y a pas de planning
+Lorsque le programme démarre, vous aurez une liste de choix: Crée un/des mds à partir de templates et les exporter en pdf, Créer un fichier contenant les dates des séances de tirs, Effectuer les deux commandes précédentes ou encore exporter un/des markdowns en pdf. Cette dernière fonction est utilisé si vous avez modifier quelques lignes directements sur les markdowns situées dans le dossier de l'année.
 
 # Sortie 
 Le programme crée un dossier correspondant à l'année actuel, avec ( en assumant que vous avez choisi l'option de tout exécuté), un fichier pdf et markdown

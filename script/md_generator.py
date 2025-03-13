@@ -2,10 +2,6 @@ import os
 import sys
 from datetime import datetime
 import pathlib
-#from pdfquery import PDFQuery
-from ics import Calendar, Event, Todo
-import calendar
-from datetime import datetime
 import time
 #Extract Data into array here
 from pypdf import PdfReader
@@ -14,10 +10,12 @@ import pandas as pd
 from markdown_pdf import MarkdownPdf,Section
 from script.calendar_event import calendar_event
 import locale
+import calendar
 
 
 class md_generator:
     def __init__(self):
+        #Permet le retour de jour/mois en français, mettre en commentaire si on veut en anglais
         locale.setlocale(category=locale.LC_ALL,locale="fr_FR.utf8")
         val_indisponible = "LA VALEUR EST MANQUANT DANS LES DATES DE TIRS"
         self.data_tableau = ["Role","Nom Prenom"]
@@ -28,6 +26,7 @@ class md_generator:
             print("ERROR : Le fichier de données n'est pas au bon endroit ou son nom a été modifié. Cela ne devrait pas arriver si vous n'avez modifié que le contenue de valConst.csv avec excel ou à la main (mais dans ce cas la, je suis sur que Coco ne verra pas sa)")
             sys.exit()
         self.annee_actuelle = datetime.now().year
+        #Liste modifiable contenant des éléments qui seront automatiquement remplis. Mettrer à jour le READMe pour indique à l'utilisateur de leurs existence
         self.lstACalc = {"ANNEE" : str(self.annee_actuelle), "NB_PRESENT" : str(self.nbMembre), "ANNEE_PRECEDENT" : str(self.annee_actuelle-1),"TRAINING" : val_indisponible, "OPEN_DOORS" : val_indisponible, "CAMPAIGN":val_indisponible, "ENDING_SHOOT":val_indisponible}
         self.PATH_RES_FOLDER = sys.path[0] + "/" + str(self.annee_actuelle)
         pathlib.Path(self.PATH_RES_FOLDER).mkdir(exist_ok=True)
@@ -42,11 +41,38 @@ class md_generator:
         res = pattern_row_data.findall(text_to_match)
         return list(dict.fromkeys(res))
     
-    def sanitize_word(self,word):
-    #Remove '{{' and '}}' from the given word.
+    def sanitize_word(self,word : str):
+        """
+        Retourne un string extrait d'un pdf correspondant à une var, en un string sans {{}}
+        :param word str: Un string correspondant à cet structure {{VAR}}
+        """
+        #Remove '{{' and '}}' from the given word.
         return re.sub(r'{{(.*?)}}', r'\1', word)    
+      
+    def fill_md(self,f):
+        """
+        Remplis les trous dans le string du template. Les champs spécials (faire-parts/membres) sont traitée dans leurs fonctions dédiées.
+        Renvoie un string contenant le string remplis, et une liste contenant les vars qui n'ont pas pu être trouvé et devant être fait depuis les fonctions (faire-part/membres)
+        :param f openfile: Représente un fichier ouvert dans le dossier template
+        """
+        md_content = f.read() 
+        lst_uni_var = self._get_lst_dynvar("\{[^}]*\}}",md_content)
+        res_var = ""
         
-    def gen_mdfile(self,filename : str):
+        #entry_to_change correspond à {{Rôle}}
+        for entry_to_change in lst_uni_var:
+            cleaned_index = self.sanitize_word(entry_to_change)
+            #cleaned_index correspond à Rôle
+            if cleaned_index in self.lstACalc :
+                md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
+            else :
+                try:
+                    md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index]["Information"])
+                except:
+                    res_var = entry_to_change
+        return md_content,res_var
+            
+    def gen_md(self,filename : str):
         """ 
         Permet la création du markdown et du pdf du template avec les valeurs constante remplacé par celle attendu. 
         :param str filename: Le nom du fichier template (sans l'extension) à remplir et exporter en pdf
@@ -57,63 +83,48 @@ class md_generator:
         except:
             print(f"Erreur, vous n'avez pas mis le template {filename}.md dans le dossier template.")
             exit()
-        md_content = f.read() 
-        removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
-        
-        for entry_to_change in removed_secondentry:
-            cleaned_index = self.sanitize_word(entry_to_change)
-            if cleaned_index in self.lstACalc :
-                md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
-            else :
-                md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index]["Information"])
-        t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
-        t.write(md_content)
-        t.close()
-        self.md_to_pdf(f"{filename}_{self.annee_actuelle}")
-        print(f"Le fichier {filename}.md a été crée et importé en pdf avec succès")
+        md_content, empty = self.fill_md(f)
+        self.save_md(filename,md_content)
         
         
         
-    def gen_member_md(self):
+    def gen_member_md(self,filename:str):
+        """
+        Génère le md du template membres en un markdown complèter puis exporte en pdf
+        :param filename str: Est égal à membres
+        """
+        
         try:
-            f = open(f'template/membres.md', 'r') 
+            f = open(f'template/{filename}.md', 'r') 
         except:
-            print(f"Erreur, vous avez supprimé/déplacé le template membres.md du dossier template.")
+            print(f"Erreur, vous avez supprimé/déplacé le template {filename}.md du dossier template.")
             exit()
         try:
             dm = pd.read_csv(f'./data/membres.csv',sep=";") 
         except:
             print(f"Erreur, vous avez supprimé/déplacé le fichier membres.csv du dossier data.")
             exit()
-        
-        md_content = f.read()
-        removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
-        for entry_to_change in removed_secondentry:
-            cleaned_index = self.sanitize_word(entry_to_change)
-            if cleaned_index in self.lstACalc :
-                md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
-            #Cela indique que on a un tableau
-            elif 'TABLE' in cleaned_index :
-                #Remplacer par création du tableau html + par défaut Role | Nom Prénom
-                array_html = "<table><tr>"
-                for header in self.data_tableau:
-                    array_html += f"<th>{header}</th>"
-                array_html += "</tr>"
-                lst_entry = cleaned_index.split(sep='|')
-                for idx in range(len(dm)):
-                    array_html += self.get_row_table(idx,dm)
-                array_html += "</table>"
-                md_content = md_content.replace(entry_to_change,array_html)                
-            else :
-                md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index]["Information"])
-        t = open(f'{self.PATH_RES_FOLDER}/membres_{self.annee_actuelle}.md', 'w') 
-        t.write(md_content)
-        t.close()
-        self.md_to_pdf(f"membres_{self.annee_actuelle}")
-        print("Le fichier membre a été crée et importé avec succès")
+        md_content,var_member = self.fill_md(f)
+        #Remplacer par création du tableau html + par défaut Role | Nom Prénom
+        array_html = "<table><tr>"
+        for header in self.data_tableau:
+            array_html += f"<th>{header}</th>"
+        array_html += "</tr>"
+        for idx in range(len(dm)):
+            array_html += self.get_row_table(idx,dm)
+        array_html += "</table>"
+        md_content = md_content.replace(var_member,array_html)
+        self.save_md(filename,md_content)
             
-    def get_row_table(self,index:int,df_membre):
+    def get_row_table(self,index:int,df_membre) -> str:
+        """
+        Retourne un string contenant le tableau en html pour les membres
+        :param index int: Représente l'ID du membre voulu
+        :param df_membre pandaDT: Représente le fichier .csv contenant les membres ouvert
+        """
         row = "<tr>"
+        #data_tableau contient les index en string (ex : Rôle). Chaque entrée représente une colonne, on peut combiner en incluant n élément dans une cellule en 
+        #respectant la syntaxe Idx1 Idx2 (Nom Prénom)
         for val in self.data_tableau:
             if len(val.split(' ')) > 1:
                 row += "<td>"
@@ -126,6 +137,10 @@ class md_generator:
                 
             
     def gen_fp_md(self,filename:str):
+        """
+        Retourne un md complèter de faire_part, et l'exporte en pdf
+        :param filename str: Égal à faire_part
+        """
         isc_tools = calendar_event()
         lst_event = isc_tools.get_lst_date()
                     
@@ -153,22 +168,11 @@ class md_generator:
                     elem_date = x[0].split('.')
                     mois = calendar.month_name[int(elem_date[1])]
                     lst_OP.setdefault(f"{jour_semaine} {x[1]}-{x[2]}",[]).append(f"{elem_date[0]} {mois}")
-        md_content = f.read() 
-        removed_secondentry = self._get_lst_dynvar("\{[^}]*\}}",md_content)
-        
-        for entry_to_change in removed_secondentry:
-            cleaned_index = self.sanitize_word(entry_to_change)
-            if cleaned_index in self.lstACalc :
-                md_content = md_content.replace(entry_to_change,self.lstACalc[cleaned_index])
-            elif cleaned_index == "TABLE_EVENT":
-                md_content = md_content.replace(entry_to_change,self.fp_table(lst_OP))
-            else :
-                md_content = md_content.replace(entry_to_change,self.df.loc[cleaned_index]["Information"])
-        t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
-        t.write(md_content)
-        t.close()
-        self.md_to_pdf(f"{filename}_{self.annee_actuelle}")
-        print("Le fichier de faire part a été crée et importé avec succès")
+                    
+                    
+        md_content,entry_to_change = self.fill_md(f)
+        md_content = md_content.replace(entry_to_change,self.fp_table(lst_OP))
+        self.save_md(filename,md_content)
         
     def fp_table(self,lst_eventjour : dict):
         """
@@ -194,12 +198,23 @@ class md_generator:
             res += "</tr>"
         return res + "</table>"
     
+    def save_md(self,filename:str,new_content:str):
+        t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
+        t.write(new_content)
+        t.close()
+        self.md_to_pdf(f"{filename}_{self.annee_actuelle}")    
+        print(f"Le fichier {filename}.md a été crée et importé en pdf avec succès")    
+    
     def get_dict_longest(self,lst_evalute : dict) -> int:
+        """
+        Retourne la taille du jour avec le plus de séance de tir du dictionnaire. 
+        :param lst_evalute dict: Un dictionnaire contenant pour chaque index un jour de la semaine avec sa liste d'événement
+        """
         highest = 0
         cmpt = 0
-        for cols in lst_evalute:
+        for days in lst_evalute:
             cmpt = 0    
-            for rows in cols:
+            for event in days:
                 cmpt += 1
             highest = cmpt if highest < cmpt else highest
         return highest
