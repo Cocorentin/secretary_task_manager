@@ -61,26 +61,33 @@ class user_interface:
         """
         Retourne un menu permettant l'exportation de un/tout le(s) fichiers md stocké dans le dossier de l'année actuel. Cet fonction
         ne vérifie pas si le fichier voulu existe.
-        """             
-        option_pdf = "0 Exporter la convocation\n1 Exporter le fair part\n2 Exporter les membres\n3 Exporter le pv\n4 Tout exporter\nExit pour returner au menu précédent\n"
+        """     
+        lst_available_pdf = []
+        for file in  os.listdir(f"./{datetime.now().year}"):
+            if file.endswith(".md"):
+                lst_available_pdf.append(file[:-3])
+        if len(lst_available_pdf) == 0:
+            print("Vous n'avez pas de fichier md exportable, veuillez les crée d'abords.")
+            return None
+        option_pdf = ""
+        for idx in range(len(lst_available_pdf)):
+            option_pdf += f"{idx} Exporter {lst_available_pdf[idx]}\n"
+                        
+        option_pdf += f"{len(lst_available_pdf)} Tout exporter\nExit pour returner au menu précédent\n"
         while True:
             print(option_pdf)
             answ = input("Entrer l'action souhaité : ")
-            match answ.lower():
-                case "0":
-                    self.md_tools.md_to_pdf(f"convocation_ag_{self.annee_actuelle}")
-                case "1":
-                    self.md_tools.md_to_pdf(f"faire_part_{self.annee_actuelle}")
-                case "2":
-                    self.md_tools.md_to_pdf(f"membres_{self.annee_actuelle}")
-                case "3":
-                    self.md_tools.md_to_pdf(f"pv_ag_{self.annee_actuelle}")
-                case "4":
+            if answ.isdigit():
+                answ_int = int(answ)
+                if answ_int == len(lst_available_pdf):
                     self._gen_all_pdf()
-                case "exit":
-                    break
-                case "" | _:
-                    print("Veuillez entrer une commande valide\n")
+                else:
+                    try:
+                        self.md_tools.md_to_pdf(lst_available_pdf[answ_int])
+                    except:
+                        print("Veuillez entre une action valide")
+            elif answ.lower() == "exit":
+                break
             
     def run(self):
         """
