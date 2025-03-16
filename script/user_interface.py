@@ -66,6 +66,8 @@ class user_interface:
         for file in  os.listdir(f"./{datetime.now().year}"):
             if file.endswith(".md"):
                 lst_available_pdf.append(file[:-3])
+                
+                
         if len(lst_available_pdf) == 0:
             print("Vous n'avez pas de fichier md exportable, veuillez les crée d'abords.")
             return None
@@ -89,6 +91,26 @@ class user_interface:
             elif answ.lower() == "exit":
                 break
             
+    def _menu_ics(self):
+        """
+        Affiche le menu pour convertir les csv en fichier ics pour exporter dans google calendar
+        """
+        option_md = "0 Exporter les dates de tirs\n1 Export les rappels\n2 Tout exporter\nExit pour returner au menu précédent\n"
+        while True:
+            print(option_md)
+            answ = input("Entrer l'action souhaité : ")
+            match answ.lower():
+                case "0":
+                    self.isc_tools.export_to_calendar()
+                case "1":
+                    self.isc_tools.export_reminder()
+                case "2":
+                    self.isc_tools.export_to_calendar()
+                    self.isc_tools.export_reminder()                    
+                case "exit":
+                    break
+                case "" | _:
+                    print("Veuillez entrer une commande valide\n")    
     def run(self):
         """
         lst_file is a list containing all the filename in the template folder
@@ -104,7 +126,7 @@ class user_interface:
                 case "0":
                     self._menu_md()
                 case "1":
-                    self.isc_tools.export_to_calendar()
+                    self._menu_ics()
                 case "2":
                     event_date = self.isc_tools.export_to_calendar()
                     self._gen_all_md()

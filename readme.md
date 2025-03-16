@@ -16,6 +16,7 @@ ne sont pas affichée dans ce fichier car ils sont calculé automatiquement
 - - TRAINING / OPEN_DOORS / CAMPAIGN / ENDING_SHOOT Correspond au date de certains événements. Elles se remplissent automatiquement lors de la création du faire-part
 
 - Un pdf contenant les dates des jours de tirs. Un pdf d'exemple existe dans le dossier data (qui doit contenir votre nouveau planning)
+- Un fichier csv contenant les informations pour les rappels. Merci de suivre le format de date (Année-Mois-Jour)
 
 # Programming
 Cette partie doit être complèter pour contenir des éléments devant être modifié depuis le code
