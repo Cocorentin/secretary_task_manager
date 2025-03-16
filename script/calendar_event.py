@@ -1,11 +1,12 @@
 import os
 import sys
 from datetime import datetime
-#from pdfquery import PDFQuery
 from ics import Calendar, Event, Todo
 #Extract Data into array here
 from pypdf import PdfReader
 import re
+import pandas as pd
+
 
 class calendar_event:
      
@@ -73,3 +74,25 @@ class calendar_event:
             split_txt = raw_text.splitlines()
             self.get_pdf_data(split_txt,date_lst)
         return date_lst
+
+    def export_reminder(self):
+
+        try:
+            self.df = pd.read_csv('./data/event.csv',sep=";")
+        except:
+            print("ERREUR, VOUS N'AVEZ PAS INCLUT UN FICHIER event.csv DANS LE DOSSIER DATA")
+            sys.exit()
+        #Create ISC
+        c = Calendar()
+        for index,entry in self.df.iterrows():
+            e = Event()
+            e.name = entry['Description']
+            e.begin = datetime.fromisoformat(entry["Date"] +"T" + entry["Start"] +":00+02:00")
+            e.end = datetime.fromisoformat(entry["Date"] +"T" + entry["End"] + ":00+02:00")
+            c.events.add(e)
+        c.events
+        # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
+        with open( self.PATH_RES_FOLDER +'/Event.ics', 'w') as my_file:
+            my_file.writelines(c.serialize_iter())
+        print("Les événement ont été exportées avec succès")
+        

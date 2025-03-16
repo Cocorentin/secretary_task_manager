@@ -83,6 +83,8 @@ class md_generator:
         except:
             print(f"Erreur, vous n'avez pas mis le template {filename}.md dans le dossier template.")
             exit()
+        
+    
         md_content, empty = self.fill_md(f)
         self.save_md(filename,md_content)
         
