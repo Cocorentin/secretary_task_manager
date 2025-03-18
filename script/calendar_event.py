@@ -61,7 +61,7 @@ class calendar_event:
         la fonction export_to_calendar
         """
         try:
-            reader = PdfReader(f'data/Annonce des jours de tirs_{self.annee_actuelle}.pdf')
+            reader = PdfReader(f'data/Annonce_des_jours de tirs_{self.annee_actuelle}.pdf')
         except Exception as e:
             print(f"ERREUR, le fichier n'est pas trouvable dans le dossier data, veuillez insèrer un pdf nommée Annonce_des_jours_de_tirs_{self.annee_actuelle}.pdf")
             print(f"{e}")
