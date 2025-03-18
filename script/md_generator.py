@@ -16,14 +16,21 @@ import calendar
 class md_generator:
     def __init__(self):
         #Permet le retour de jour/mois en français, mettre en commentaire si on veut en anglais
-        locale.setlocale(category=locale.LC_ALL,locale="fr_FR.utf8")
+        try:
+            locale.setlocale(category=locale.LC_ALL,locale="fr_FR.utf8")
+        except Exception as e:
+            print(f"{e}\n Local n'a pas pu être set en français, les dates seront écris en anglais")
+            #Pour windows, les utilisateurs de mac se démerderont
+            locale.setlocale(category=locale.LC_ALL,locale="fr-CH")
+            
         val_indisponible = "LA VALEUR EST MANQUANT DANS LES DATES DE TIRS"
         self.data_tableau = ["Role","Nom Prenom"]
         try:
             self.df = pd.read_csv('./data/valConst.csv',sep=";",index_col=0)
             self.nbMembre = len(self.df.loc["PRESENT_MEMBERS"]["Information"].split(','))
-        except:
+        except Exception as e:
             print("ERROR : Le fichier de données n'est pas au bon endroit ou son nom a été modifié. Cela ne devrait pas arriver si vous n'avez modifié que le contenue de valConst.csv avec excel ou à la main (mais dans ce cas la, je suis sur que Coco ne verra pas sa)")
+            print(f"{e}")
             sys.exit()
         self.annee_actuelle = datetime.now().year
         #Liste modifiable contenant des éléments qui seront automatiquement remplis. Mettrer à jour le READMe pour indique à l'utilisateur de leurs existence
@@ -80,15 +87,13 @@ class md_generator:
         
         try:
             f = open(f'template/{filename}.md', 'r') 
-        except:
+        except Exception as e:
             print(f"Erreur, vous n'avez pas mis le template {filename}.md dans le dossier template.")
+            print(f"{e}")
             exit()
-        
-    
+
         md_content, empty = self.fill_md(f)
-        self.save_md(filename,md_content)
-        
-        
+        self.save_md(filename,md_content)        
         
     def gen_member_md(self,filename:str):
         """
@@ -98,13 +103,15 @@ class md_generator:
         
         try:
             f = open(f'template/{filename}.md', 'r') 
-        except:
+        except Exception as e:
             print(f"Erreur, vous avez supprimé/déplacé le template {filename}.md du dossier template.")
+            print(f"{e}")
             exit()
         try:
             dm = pd.read_csv(f'./data/membres.csv',sep=";") 
-        except:
+        except Exception as e:
             print(f"Erreur, vous avez supprimé/déplacé le fichier membres.csv du dossier data.")
+            print(f"{e}")
             exit()
         md_content,var_member = self.fill_md(f)
         #Remplacer par création du tableau html + par défaut Role | Nom Prénom
@@ -148,8 +155,9 @@ class md_generator:
                     
         try:
             f = open(f'template/{filename}.md', 'r') 
-        except:
+        except Exception as e:
             print(f"Erreur, vous n'avez pas mis le template {filename}.md dans le dossier template.")
+            print(f"{e}")
             exit()
             
         lst_OP = dict()
@@ -229,12 +237,15 @@ class md_generator:
         """
         try:
             fMd = open(f'{self.PATH_RES_FOLDER}/{filename}.md', 'r')
-        except:
+        except Exception as e:
             print(f"ERROR, le fichier {filename} de l'année actuelle n'existe pas en md, assurez vous de crée le md auparavant")
+            print(f"{e}")
             sys.exit()
+            
         md_content = fMd.read()
         fMd.close()
         pdf = MarkdownPdf(toc_level=2)
         pdf.add_section(Section(md_content))
         pdf.save(f"{self.PATH_RES_FOLDER}/{filename}.pdf")
+        print(f"Le fichier {filename} a été exporté avec succès \n")
             

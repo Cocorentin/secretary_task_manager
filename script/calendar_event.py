@@ -62,8 +62,9 @@ class calendar_event:
         """
         try:
             reader = PdfReader(f'data/Annonce des jours de tirs_{self.annee_actuelle}.pdf')
-        except:
-            print("ERREUR, le fichier n'est pas trouvable dans le dossier data, veuillez insèrer un pdf nommée joursdetirs")
+        except Exception as e:
+            print(f"ERREUR, le fichier n'est pas trouvable dans le dossier data, veuillez insèrer un pdf nommée Annonce_des_jours_de_tirs_{self.annee_actuelle}.pdf")
+            print(f"{e}")
             sys.exit()
         date_lst = []
         
@@ -79,8 +80,9 @@ class calendar_event:
 
         try:
             self.df = pd.read_csv('./data/event.csv',sep=";")
-        except:
+        except Exception as e:
             print("ERREUR, VOUS N'AVEZ PAS INCLUT UN FICHIER event.csv DANS LE DOSSIER DATA")
+            print(f"{e}")
             sys.exit()
         #Create ISC
         c = Calendar()

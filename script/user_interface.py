@@ -10,11 +10,15 @@ class user_interface:
     def __init__(self):
         try:
             self.md_tools = md_generator()
-            self.isc_tools = calendar_event()
-            self.annee_actuelle = datetime.now().year
-        except:
-            print("ERROR: Un/Des scripts ont été bougée du dossier script, ou le dossier a été déplacé ailleur que dans le dossier courant. Assurez vous que md_generator.py et calendar_event sont dans le même répertoire que user_interface")
+        except Exception as e:
+            print(f"{e}")
             sys.exit()
+        try:
+            self.isc_tools = calendar_event()
+        except Exception as e:
+            print(f"{e}")
+            sys.exit()
+        self.annee_actuelle = datetime.now().year
             
                 
     def _gen_all_md(self):    
