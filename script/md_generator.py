@@ -212,8 +212,8 @@ class md_generator:
         t = open(f'{self.PATH_RES_FOLDER}/{filename}_{self.annee_actuelle}.md', 'w') 
         t.write(new_content)
         t.close()
-        self.md_to_pdf(f"{filename}_{self.annee_actuelle}")    
         print(f"Le fichier {filename}.md a été crée et importé en pdf avec succès")    
+        self.md_to_pdf(f"{filename}_{self.annee_actuelle}")    
     
     def get_dict_longest(self,lst_evalute : dict) -> int:
         """

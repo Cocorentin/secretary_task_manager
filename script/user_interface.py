@@ -3,6 +3,8 @@ import sys
 from datetime import datetime
 from script.md_generator import md_generator
 from script.calendar_event import calendar_event
+from simple_term_menu import TerminalMenu
+
 
 
 class user_interface:
@@ -66,6 +68,7 @@ class user_interface:
         Retourne un menu permettant l'exportation de un/tout le(s) fichiers md stocké dans le dossier de l'année actuel. Cet fonction
         ne vérifie pas si le fichier voulu existe.
         """     
+
         lst_available_pdf = []
         for file in  os.listdir(f"./{datetime.now().year}"):
             if file.endswith(".md"):
@@ -75,25 +78,23 @@ class user_interface:
         if len(lst_available_pdf) == 0:
             print("Vous n'avez pas de fichier md exportable, veuillez les crée d'abords.")
             return None
-        option_pdf = ""
-        for idx in range(len(lst_available_pdf)):
-            option_pdf += f"{idx} Exporter {lst_available_pdf[idx]}\n"
+    
+        option_pdf = []
+        for file in lst_available_pdf:
+            option_pdf.append(f"{file}")
                         
-        option_pdf += f"{len(lst_available_pdf)} Tout exporter\nExit pour returner au menu précédent\n"
+        option_pdf.append(f"Retourner au menu précèdent")
+        terminal_menu = TerminalMenu(option_pdf,
+                                     title="Exporter un fichier en pdf",
+                                     multi_select=True,
+                                     show_multi_select_hint=True,)
         while True:
-            print(option_pdf)
-            answ = input("Entrer l'action souhaité : ")
-            if answ.isdigit():
-                answ_int = int(answ)
-                if answ_int == len(lst_available_pdf):
-                    self._gen_all_pdf()
+            menu_entry_index = terminal_menu.show()
+            for select_opt in terminal_menu.chosen_menu_entries:
+                if select_opt.startswith("Retourner"):
+                    return None
                 else:
-                    try:
-                        self.md_tools.md_to_pdf(lst_available_pdf[answ_int])
-                    except:
-                        print("Veuillez entre une action valide")
-            elif answ.lower() == "exit":
-                break
+                    self.md_tools.md_to_pdf(select_opt)
             
     def _menu_ics(self):
         """
