@@ -20,6 +20,7 @@ class user_interface:
         except Exception as e:
             print(f"{e}")
             sys.exit()
+        self.msg_aide = "Utiliser la touche tabulation ou espace pour sélectionner plusieurs éléments. Utiliser Enter pour sélectionner une commande ou valider l'ensemble des commandes sélectionnées"
         self.annee_actuelle = datetime.now().year
             
                 
@@ -28,40 +29,31 @@ class user_interface:
         self.md_tools.gen_fp_md("faire_part")
         self.md_tools.gen_member_md("membres")
         self.md_tools.gen_md("pv_ag")
-            
-    def _gen_all_pdf(self):    
-        """
-        Exporter tout les mds présent dans le dossier de l'année actuel en pdf. Cette fonction ne plante pas s'il n'y a pas tout les mds présents.
-        """
-        for file in  os.listdir(f"./{datetime.now().year}"):
-            if file.endswith(".md"):
-                self.md_tools.md_to_pdf(file[:-3])
-        
         
     def _menu_md(self):
         """
         Affiche le menu pour convertir les templates en markdowns remplis
         """
-        option_md = "0 Créer la convocation\n1 Crée le fair part\n2 Créer les membres\n3 Crée le pv\n4 Tout créer\nExit pour returner au menu précédent\n"
+        option_md = ["Créer la convocation","Crée le fair part","Créer les membres","Crée le pv","Exit pour returner au menu précédent"]
+        terminal_menu = TerminalMenu(option_md,
+                                    title="Exporter un fichier en pdf",
+                                    multi_select=True,
+                                    show_multi_select_hint=True,
+                                    show_multi_select_hint_text=self.msg_aide)
         while True:
-            print(option_md)
-            answ = input("Entrer l'action souhaité : ")
-            match answ.lower():
-                case "0":
-                    self.md_tools.gen_md("convocation_ag")
-                case "1":
-                    self.md_tools.gen_fp_md("faire_part")
-                case "2":
-                    self.md_tools.gen_member_md("membres")
-                case "3":
-                    self.md_tools.gen_md("pv_ag")
-                case "4":
-                    self._gen_all_md()                                        
-                case "exit":
-                    break
-                case "" | _:
-                    print("Veuillez entrer une commande valide\n")
-
+            menu_entry_index = terminal_menu.show()
+            for idx in menu_entry_index:
+                match idx:
+                    case 0:
+                        self.md_tools.gen_md("convocation_ag")
+                    case 1:
+                        self.md_tools.gen_fp_md("faire_part")
+                    case 2:
+                        self.md_tools.gen_member_md("membres")
+                    case 3:
+                        self.md_tools.gen_md("pv_ag")
+                    case 4:
+                        return None
     
     def _menu_pdf(self):
         """
@@ -87,7 +79,8 @@ class user_interface:
         terminal_menu = TerminalMenu(option_pdf,
                                      title="Exporter un fichier en pdf",
                                      multi_select=True,
-                                     show_multi_select_hint=True,)
+                                     show_multi_select_hint=True,
+                                     show_multi_select_hint_text=self.msg_aide)
         while True:
             menu_entry_index = terminal_menu.show()
             for select_opt in terminal_menu.chosen_menu_entries:
@@ -100,46 +93,48 @@ class user_interface:
         """
         Affiche le menu pour convertir les csv en fichier ics pour exporter dans google calendar
         """
-        option_md = "0 Exporter les dates de tirs\n1 Export les rappels\n2 Tout exporter\nExit pour returner au menu précédent\n"
+        option_ics = ["Séance de tir","Rappels/Événement","Retourner au menu précédent"]
+                                
+        terminal_menu = TerminalMenu(option_ics,
+                                     title="Exporter les dates en ics",
+                                     multi_select=True,
+                                     show_multi_select_hint=True,
+                                     show_multi_select_hint_text=self.msg_aide)
         while True:
-            print(option_md)
-            answ = input("Entrer l'action souhaité : ")
-            match answ.lower():
-                case "0":
-                    self.isc_tools.export_to_calendar()
-                case "1":
-                    self.isc_tools.export_reminder()
-                case "2":
-                    self.isc_tools.export_to_calendar()
-                    self.isc_tools.export_reminder()                    
-                case "exit":
-                    break
-                case "" | _:
-                    print("Veuillez entrer une commande valide\n")    
+            menu_entry_index = terminal_menu.show()
+            for idx in menu_entry_index:
+                match idx:
+                    case 0:
+                        self.isc_tools.export_to_calendar()
+                    case 1:
+                        self.isc_tools.export_reminder()
+                    case 2:
+                        return None
     def run(self):
         """
         lst_file is a list containing all the filename in the template folder
         This function let you start the interace, allowing the user to have the
         programm executed the task needed
         """
-        option_lst = "0 Créer MD\n1 Créer ICS\n2 Créer ALL\n3 Export PDF\nExit pour quitter le programme"
         
+        option_main = ["Créer des MD/PDF","Exporter des dates","Tout exécuter","Exporter des pdfs","Quitter le programme"]
+                                
+        terminal_menu = TerminalMenu(option_main,
+                                     title="Menu Principale")
+                   
         while True:
-            print(option_lst)
-            answ = input("Entrer l'action souhaité : ")
-            match answ.lower():
-                case "0":
+            menu_entry_index = terminal_menu.show()
+            match menu_entry_index:
+                case 0:
                     self._menu_md()
-                case "1":
+                case 1:
                     self._menu_ics()
-                case "2":
+                case 2:
                     event_date = self.isc_tools.export_to_calendar()
                     self._gen_all_md()
-                case "3":
+                case 3:
                     self._menu_pdf()
-                case "exit":
-                    break
-                case "" | _:
-                    print("Veuillez entrer un chiffre correspondant à une des actions autorisées \n")
-
+                case 4:
+                    print("Passez une bonne journée!")
+                    return None
                 
