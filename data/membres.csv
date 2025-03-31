@@ -1,18 +1,3 @@
-Role;Nom;Prenom;Adresse;Lieu;Naissance;Entree;Tel.;Tel.prive;Mail
-Président;Robinson;Donald;57849 Gonzalez Walk;Davidmouth;02.07.53;2011;+1-259-837-0954x377;120.751.3512x4130;donald.robinson@gmail.com
-Vice-Président;White;Cindy;39436 Lisa Lock;Port Aaron;17.06.35;2002;(582)971-5316;001-775-348-2144x18076;cindy.white@gmail.com
-Trésorier;Rose;Thomas;9701 Keith Islands;West Annashire;04.05.34;1988;;2273769002;thomas.rose@yahoo.com
-Secrétaire;Holden;Amy;4911 James Island;West Joseph;25.05.93;2019;;+1-355-351-0755;amy.holden@yahoo.com
-Directeur de tir;Abbott;Darren;52350 Brown Mountain Apt. 673;Kennethfurt;02.08.98;1998;;342-180-2087;darren.abbott@gmail.com
-Président d'honneur;Davis;Charles;29796 Deborah Cape;Alejandrohaven;12.10.52;1980;001-304-868-5993x392;+1-672-646-2781x46912;charles.davis@yahoo.com
-Membre d'honneur;Eaton;Breanna;75404 Reynolds Tunnel;West Adammouth;22.12.35;1959;779-823-5623x6197;001-622-074-8057x42207;breanna.eaton@gmail.com
-membre;Warren;Bradley;298 William Island Apt. 760;Port Kelly;20.01.55;2009;133.637.2229;;bradley.warren@yahoo.com
-membre;Elliott;Shane;5064 Richard Vista Apt. 400;Lynnton;21.11.55;2016;;(938)400-2374;shane.elliott@hotmail.com
-membre;Davis;David;66352 Wilson Divide Suite 282;Higginsburgh;08.07.60;2016;(166)710-3201x108;001-241-565-7080x47727;david.davis@gmail.com
-membre;Morrow;Jordan;98284 Rebecca Garden Apt. 518;New Patrick;06.05.60;2016;574708739;643.595.4025x718;jordan.morrow@yahoo.com
-membre;Reyes;Caitlin;93666 Kirk Parkways Suite 447;Port Samantha;22.12.47;2017;(104)585-8813x167;(926)531-1622;caitlin.reyes@yahoo.com
-membre;Butler;Kevin;6536 Kari Meadow Suite 759;South Victoria;04.11.04;2020;;(831)594-2339x83498;kevin.butler@hotmail.com
-membre;Joyce;Roberto;618 Olson Rest Apt. 676;Tuckermouth;29.04.49;2023;;444-922-9338x9051;roberto.joyce@gmail.com
-membre;Berg;Alexis;4121 Tim Path Apt. 086;Scottport;11.08.40;2024;;(614)015-9824x35688;alexis.berg@gmail.com
-membre;James;Ruben;8534 Raymond Street;Amyfurt;27.05.65;2024;;001-263-114-6858;ruben.james@hotmail.com
-membre;Smith;Anthony;0051 Teresa Trafficway;New Amy;19.09.96;2024;;008.207.8918;anthony.smith@gmail.com
+version https://git-lfs.github.com/spec/v1
+oid sha256:06dbd3a0ffb879edf144c31a9874e7c94136f2580bd2b8e55755da2db64a7dc3
+size 2142
