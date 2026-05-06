@@ -6,9 +6,9 @@ Ces documents doivent être placés dans le dossier template, ou data.
 - sudo locale-gen fr_FR.utf8 pour unbutu
 
 # Entrée
-- X documents voulus, sous format markdown dans le dossier template. Vous pouvez également ajouter des éléments HTML
-Dans ce markdown qui seront pris en compte lors de la création en PDF. La liste des variables constantes est située dans le dossier
-Data dans le fichier valConst.csv. Veuillez respecter le format {{Variable}} pour que le programme remplisse automatiquement les champs
+- Insèrer les documents voulus sous format markdown dans le dossier template. Vous pouvez également ajouter des éléments HTML
+dans ce markdown qui seront pris en compte lors de la création en PDF. La liste des variables constantes est située dans le fichier
+valConst.csv situé dans le dossier Data. Veuillez respecter le format {{Variable}} pour que le programme remplisse automatiquement les champs
 
 - Un fichier valConst.csv situé dans le dossier data. Vous pouvez modifier ce dossier pour ajouter des nouvelles variables ou changer
 celles existants. Ce fichier peut être ouvert en Excel, veuillez cependant respecter le format imposé (Trois cellules). Certaines valeurs
@@ -27,14 +27,11 @@ Cette partie doit être complète pour contenir des éléments devant être modi
 - - Data_tableau est un tableau utilisé pour la fonction membres uniquement. Elle permet de définir les champs que votre tableau doit contenir
 
 # Utilisation
-python3 main.py
+python3 main.py <br>
 Lorsque le programme démarre, vous aurez une liste de choix : Créer un/des mds à partir de templates et les exporter en PDF, Créer un fichier contenant les dates des séances de tirs, Effectuer les deux commandes précédentes ou encore exporter un/des markdowns en PDF. Cette dernière fonction est utilisée si vous avez modifié quelques lignes directement sur les markdowns situés dans le dossier de l'année.
 
 # Sortie 
 Le programme crée un dossier correspondant à l'année actuelle, avec ( en assumant que vous avez choisi l'option de tout exécuter), un fichier PDF et Markdown
 par template, compléter par les valeurs contenues dans valConst. Vous aurez aussi un fichier.ics contenant les dates des séances de tir que vous pourrez
 importer dans un calendrier comme Google Calendar
-
-
-Rajouter le menu envoyé par coco
 
